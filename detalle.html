@@ -542,17 +542,17 @@
         let peliculaData = null;
         let currentUser = null;
 
+        // En detalle.html, modifica la parte de funciones
         async function loadDetalle() {
             if (!peliculaId) {
                 showToast('ID de película no válido', 'error');
                 return;
             }
 
-            // Obtener usuario actual
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) currentUser = session.user;
 
-            // 1. Película (vista_peliculas)
+            // 1. Película
             const { data: peli, error: errPeli } = await supabase
                 .from('vista_peliculas')
                 .select('*')
@@ -565,36 +565,48 @@
             }
             peliculaData = peli;
 
-            // 2. Director, categorías, funciones, reseñas
-            const [directorRes, categoriasRes, funcionesRes, resenasRes] = await Promise.all([
-                supabase.from('director').select('nombre').eq('id_director', peli.id_director).maybeSingle(),
-                supabase
-                    .from('pelicula_categoria')
-                    .select('categoria(nombre_categoria)')
-                    .eq('id_pelicula', peli.id_pelicula),
-                supabase
-                    .from('funcion')
-                    .select('fecha, hora')
-                    .eq('id_pelicula', peli.id_pelicula)
-                    .order('fecha', { ascending: true })
-                    .limit(5),
-                supabase
-                    .from('vista_resenas')
-                    .select('*')
-                    .eq('id_pelicula', peli.id_pelicula)
-                    .order('id_resena', { ascending: false })
-            ]);
+            // 2. Director
+            const { data: director } = await supabase
+                .from('director')
+                .select('nombre')
+                .eq('id_director', peli.id_director)
+                .maybeSingle();
 
-            const director = directorRes.data?.nombre || 'Desconocido';
-            const categorias = categoriasRes.data?.map(item => item.categoria?.nombre_categoria).filter(Boolean) || [];
-            const funciones = funcionesRes.data || [];
-            const resenas = resenasRes.data || [];
+            // 3. Categorías
+            const { data: categoriasData } = await supabase
+                .from('pelicula_categoria')
+                .select('categoria(nombre_categoria)')
+                .eq('id_pelicula', peli.id_pelicula);
 
-            // Renderizar
-            renderHero(peli, director);
-            renderDetalle(peli, director, categorias, funciones, resenas);
+            // 4. FUNCIONES - CORREGIDO
+            const { data: funciones, error: errFunciones } = await supabase
+                .from('funcion')
+                .select('fecha, hora, id_funcion')
+                .eq('id_pelicula', peli.id_pelicula)
+                .gte('fecha', new Date().toISOString().split('T')[0]) // Solo futuras
+                .order('fecha', { ascending: true })
+                .limit(10);
+
+            if (errFunciones) {
+                console.error('Error al cargar funciones:', errFunciones);
+                showToast('Error al cargar funciones', 'error');
+            }
+
+            // 5. Reseñas
+            const { data: resenas } = await supabase
+                .from('vista_resenas')
+                .select('*')
+                .eq('id_pelicula', peli.id_pelicula)
+                .order('id_resena', { ascending: false });
+
+            const directorNombre = director?.nombre || 'Desconocido';
+            const categorias = categoriasData?.map(item => item.categoria?.nombre_categoria).filter(Boolean) || [];
+            const funcionesList = funciones || [];
+            const resenasList = resenas || [];
+
+            renderHero(peli, directorNombre);
+            renderDetalle(peli, directorNombre, categorias, funcionesList, resenasList);
         }
-
         // ============================================================
         // RENDER HERO
         // ============================================================
@@ -769,11 +781,112 @@
             }
         }
 
+        // Agrega esta función en detalle.html
+        async function verificarFunciones() {
+            const { count, error } = await supabase
+                .from('funcion')
+                .select('*', { count: 'exact', head: true });
+
+            if (error) {
+                console.error('Error al verificar funciones:', error);
+                return;
+            }
+
+            console.log(`Total de funciones en BD: ${count}`);
+
+            if (count === 0) {
+                // Insertar funciones de ejemplo si no hay
+                const { data: peliculas } = await supabase
+                    .from('pelicula')
+                    .select('id_pelicula')
+                    .limit(5);
+
+                if (peliculas && peliculas.length > 0) {
+                    const hoy = new Date();
+                    const funcionesInsert = [];
+
+                    peliculas.forEach(p => {
+                        for (let i = 1; i <= 3; i++) {
+                            const fecha = new Date(hoy);
+                            fecha.setDate(fecha.getDate() + i);
+                            funcionesInsert.push({
+                                fecha: fecha.toISOString().split('T')[0],
+                                hora: `${10 + i * 2}:00:00`,
+                                id_pelicula: p.id_pelicula
+                            });
+                        }
+                    });
+
+                    const { error: insertError } = await supabase
+                        .from('funcion')
+                        .insert(funcionesInsert);
+
+                    if (!insertError) {
+                        console.log('Funciones de ejemplo insertadas');
+                    }
+                }
+            }
+        }
+
+        // Llamar a esta función al cargar la página
+        verificarFunciones();
+
         // ============================================================
         // INIT
         // ============================================================
         loadDetalle();
     </script>
+
+    <!-- FOOTER -->
+    <footer
+        style="margin-top: 60px; padding: 40px 24px 20px; border-top: 1px solid rgba(255,255,255,0.04); background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); border-radius: 28px 28px 0 0;">
+        <div style="max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px;">
+            <!-- Logo o imagen -->
+            <div style="display: flex; justify-content: center;">
+                <img src="cinesincortes.png" alt="Logo Cine" style="max-height: 100px; width: auto;">
+            </div>
+            <!-- Redes sociales -->
+            <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+                <a href="#"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://www.facebook.com/Canal22Mexico/#"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.youtube.com/canal22"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://www.tiktok.com/@canal22mexico"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="https://www.instagram.com/canal22oficial"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+
+            <!-- Copyright -->
+            <div style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.04);">
+                <p style="color: #6a6690; font-size: 0.8rem; letter-spacing: 0.3px; margin: 0;">
+                    Copyright © 2023 Television Metropolitana S.A. de C.V. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
 </body>
 
 </html>

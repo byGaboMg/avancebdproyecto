@@ -75,9 +75,9 @@
         }
 
         .logo {
-            font-size: 2rem;
+            font-size: 3.2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #667eea 100%);
+            background: linear-gradient(135deg, #f093fb 0%, #8866ea 100%);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -178,6 +178,159 @@
             background: rgba(245, 87, 108, 0.3);
             border-color: #f5576c;
             box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
+        }
+
+        /* ===== BOTÓN LIMPIAR ===== */
+        .btn-limpiar {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #8a86b0;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-limpiar:hover {
+            background: rgba(245, 87, 108, 0.1);
+            border-color: rgba(245, 87, 108, 0.2);
+            color: #f5576c;
+            transform: translateY(-2px);
+        }
+
+        .btn-limpiar i {
+            font-size: 0.7rem;
+        }
+
+        /* ===== CATEGORÍAS DESTACADAS ===== */
+        .categorias-destacadas {
+            margin: 8px 0 16px 0;
+            padding: 4px 0;
+        }
+
+        .categorias-destacadas .categorias-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            min-width: 0;
+            padding-bottom: 4px;
+        }
+
+        .categorias-destacadas .categorias-row::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .categorias-destacadas .categorias-row::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+        }
+
+        .categorias-destacadas .categorias-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 4px 0;
+            flex: 1;
+            min-width: 0;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .categoria-chip {
+            flex-shrink: 0;
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #d0cee8;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Poppins', sans-serif;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            user-select: none;
+        }
+
+        .categoria-chip i {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .categoria-chip .chip-count {
+            font-size: 0.6rem;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0 8px;
+            border-radius: 20px;
+            color: #8a86b0;
+            font-weight: 400;
+            transition: all 0.3s ease;
+        }
+
+        .categoria-chip:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .categoria-chip:hover i {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .categoria-chip.active {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .categoria-chip.active i {
+            opacity: 1;
+        }
+
+        .categoria-chip.active .chip-count {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a8a4d4;
+        }
+
+        /* ===== OCULTAR/MOSTRAR CATEGORÍAS ===== */
+        .categorias-destacadas.oculto {
+            display: none;
+        }
+
+        .categorias-destacadas.visible {
+            display: block;
+            animation: fadeCategorias 0.4s ease forwards;
+        }
+
+        @keyframes fadeCategorias {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ===== CARRUSEL ===== */
@@ -316,6 +469,7 @@
             border-radius: 60px;
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.04);
+            justify-content: center;
         }
 
         .filtros select,
@@ -363,6 +517,90 @@
             border-color: #667eea;
             color: #fff;
             box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ===== FILTER SWITCH (CARTELERA / FUNCIONES) ===== */
+        .filter-switch-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 12px 0 28px 0;
+        }
+
+        .filter-switch {
+            border: 2px solid #667eea;
+            border-radius: 30px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 54px;
+            width: 400px;
+            max-width: 100%;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-switch input {
+            display: none;
+        }
+
+        .filter-switch label {
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.5s;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 12px 8px;
+            color: #7d7d7d;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-switch label i {
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+
+        .filter-switch .background {
+            position: absolute;
+            width: 49%;
+            height: 42px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            top: 4px;
+            left: 4px;
+            border-radius: 30px;
+            transition: left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        #optionFunciones:checked~.background {
+            left: 50%;
+        }
+
+        #optionCartelera:checked+label[for="optionCartelera"] {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        #optionFunciones:checked+label[for="optionFunciones"] {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        #optionCartelera:not(:checked)+label[for="optionCartelera"],
+        #optionFunciones:not(:checked)+label[for="optionFunciones"] {
+            color: #9a96c0;
+        }
+
+        .filter-switch label:hover {
+            color: #fff;
         }
 
         /* ===== GRID TARJETAS ===== */
@@ -513,6 +751,197 @@
             font-size: 0.8rem;
         }
 
+        /* ===== PRÓXIMAS FUNCIONES ===== */
+        .proximas-funciones {
+            margin-top: 12px;
+            padding: 0;
+            background: transparent;
+            backdrop-filter: none;
+            border: none;
+            border-radius: 0;
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+            animation-delay: 0.3s;
+        }
+
+        .proximas-funciones .titulo-seccion {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .proximas-funciones .titulo-seccion i {
+            color: #667eea;
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .funciones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .funcion-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 16px 18px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            animation: fadeUp 0.5s ease forwards;
+            opacity: 0;
+            min-height: 90px;
+            width: 100%;
+        }
+
+        .funcion-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .funcion-card:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .funcion-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .funcion-card:nth-child(4) {
+            animation-delay: 0.25s;
+        }
+
+        .funcion-card:nth-child(5) {
+            animation-delay: 0.3s;
+        }
+
+        .funcion-card:nth-child(6) {
+            animation-delay: 0.35s;
+        }
+
+        .funcion-card:hover {
+            background: rgba(102, 126, 234, 0.08);
+            border-color: rgba(102, 126, 234, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .funcion-card .funcion-poster {
+            width: 60px;
+            min-width: 60px;
+            height: 80px;
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .funcion-card .funcion-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .funcion-card .funcion-info .funcion-titulo {
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .funcion-card .funcion-info .funcion-detalle {
+            display: flex;
+            gap: 12px;
+            font-size: 0.75rem;
+            opacity: 0.7;
+            flex-wrap: wrap;
+        }
+
+        .funcion-card .funcion-info .funcion-detalle i {
+            margin-right: 3px;
+            color: #667eea;
+        }
+
+        .funcion-card .funcion-hora {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin: 0 4px;
+        }
+
+        .funcion-card .funcion-badge {
+            background: rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            animation: pulseBadge 2s ease infinite;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @keyframes pulseBadge {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+            }
+        }
+
+        .empty-funciones {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.6;
+        }
+
+        .empty-funciones i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        .seccion-oculta {
+            display: none;
+        }
+
+        .seccion-visible {
+            display: block;
+            animation: fadeUp 0.5s ease forwards;
+        }
+
         /* ===== TOASTS ===== */
         .toast-container {
             position: fixed;
@@ -584,7 +1013,139 @@
             }
         }
 
-        /* responsive */
+        /* ===== RESPONSIVE ===== */
+
+        /* Pantallas grandes (1400px+) */
+        @media (min-width: 1400px) {
+            .grid-peliculas {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 30px;
+            }
+
+            .card-pelicula .pie h4 {
+                font-size: 1rem;
+            }
+        }
+
+        /* Desktop normal (992px - 1399px) */
+        @media (min-width: 992px) and (max-width: 1399px) {
+            .grid-peliculas {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 24px;
+            }
+        }
+
+        /* Tablets grandes (768px - 991px) */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .grid-peliculas {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+
+            .card-pelicula .pie h4 {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Tablets pequeñas (576px - 767px) */
+        @media (min-width: 576px) and (max-width: 767px) {
+            .grid-peliculas {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 18px;
+            }
+
+            .card-pelicula .pie h4 {
+                font-size: 0.8rem;
+            }
+
+            .card-pelicula .pie .estrellas {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Tablets y móviles (hasta 768px) */
+        @media (max-width: 768px) {
+            .funciones-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .funcion-card {
+                padding: 14px 16px;
+                flex-wrap: nowrap;
+                min-height: 80px;
+            }
+
+            .funcion-card .funcion-poster {
+                width: 50px;
+                min-width: 50px;
+                height: 70px;
+            }
+
+            .funcion-card .funcion-info .funcion-titulo {
+                font-size: 0.85rem;
+            }
+
+            .funcion-card .funcion-hora {
+                font-size: 0.85rem;
+            }
+
+            .funcion-card .funcion-badge {
+                font-size: 0.6rem;
+                padding: 3px 10px;
+            }
+
+            .filter-switch {
+                width: 100%;
+                max-width: 400px;
+                height: 48px;
+            }
+
+            .filter-switch label {
+                font-size: 0.85rem;
+                padding: 10px 4px;
+            }
+
+            .filter-switch .background {
+                height: 36px;
+                top: 4px;
+                left: 4px;
+            }
+
+            #optionFunciones:checked~.background {
+                left: 50%;
+            }
+
+            .filter-switch-wrapper {
+                margin: 8px 0 16px 0;
+            }
+
+            .categorias-destacadas .categorias-container {
+                gap: 8px;
+            }
+
+            .categoria-chip {
+                padding: 6px 14px;
+                font-size: 0.7rem;
+                gap: 6px;
+            }
+
+            .categoria-chip i {
+                font-size: 0.65rem;
+            }
+
+            .categoria-chip .chip-count {
+                font-size: 0.55rem;
+                padding: 0 6px;
+            }
+
+            .btn-limpiar {
+                font-size: 0.65rem;
+                padding: 6px 12px;
+            }
+        }
+
+        /* Pantallas pequeñas (hasta 700px) */
         @media (max-width: 700px) {
             .carousel-slides {
                 height: 280px;
@@ -599,28 +1160,359 @@
                 padding: 18px;
             }
 
+            .carousel-controls button {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+
             .filtros {
                 border-radius: 28px;
                 flex-direction: column;
                 align-items: stretch;
+                padding: 12px 16px;
+                gap: 10px;
+            }
+
+            .filtros select,
+            .filtros .chip-group {
+                width: 100%;
+            }
+
+            .filtros .chip-group {
+                justify-content: center;
+                flex-wrap: wrap;
             }
 
             .navbar {
                 flex-direction: column;
                 align-items: stretch;
+                padding: 12px 0 8px 0;
+            }
+
+            .navbar .logo {
+                font-size: 2.4rem;
+                text-align: center;
             }
 
             .nav-actions {
                 justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .search-wrapper {
+                flex: 1;
+                min-width: 120px;
             }
 
             .search-wrapper input {
-                width: 100px;
+                width: 100%;
+                min-width: 80px;
+            }
+
+            .btn-nav {
+                padding: 6px 12px;
+                font-size: 0.8rem;
             }
 
             .grid-peliculas {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 16px;
+            }
+
+            .card-pelicula .overlay-card .titulo-over {
+                font-size: 0.9rem;
+            }
+
+            .card-pelicula .overlay-card .sinopsis-over {
+                font-size: 0.65rem;
+                -webkit-line-clamp: 1;
+            }
+
+            .card-pelicula .pie h4 {
+                font-size: 0.85rem;
+            }
+
+            .card-pelicula .pie .estrellas {
+                font-size: 0.7rem;
+            }
+
+            .proximas-funciones .titulo-seccion {
+                font-size: 1.3rem;
+                margin-bottom: 16px;
+            }
+
+            .proximas-funciones .titulo-seccion span {
+                font-size: 0.7rem !important;
+            }
+
+            .container {
+                padding: 0 12px;
+            }
+        }
+
+        /* Móviles pequeños (hasta 600px) */
+        @media (max-width: 600px) {
+            .categoria-chip {
+                padding: 6px 14px;
+                font-size: 0.7rem;
+                gap: 6px;
+            }
+
+            .categoria-chip i {
+                font-size: 0.65rem;
+            }
+
+            .categoria-chip .chip-count {
+                font-size: 0.55rem;
+                padding: 0 6px;
+            }
+
+            .categorias-destacadas .categorias-container {
+                gap: 8px;
+            }
+
+            .btn-limpiar {
+                font-size: 0.65rem;
+                padding: 6px 12px;
+            }
+        }
+
+        /* Móviles muy pequeños (hasta 500px) */
+        @media (max-width: 500px) {
+            .funcion-card {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                gap: 10px;
+                padding: 12px 14px;
+                min-height: auto;
+            }
+
+            .funcion-card .funcion-poster {
+                width: 45px;
+                min-width: 45px;
+                height: 60px;
+            }
+
+            .funcion-card .funcion-info {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .funcion-card .funcion-info .funcion-titulo {
+                font-size: 0.8rem;
+            }
+
+            .funcion-card .funcion-hora {
+                font-size: 0.8rem;
+                margin-left: auto;
+            }
+
+            .funcion-card .funcion-badge {
+                width: 100%;
+                justify-content: center;
+                font-size: 0.6rem;
+                padding: 3px 0;
+            }
+
+            .funciones-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .filter-switch {
+                width: 100%;
+                height: 44px;
+            }
+
+            .filter-switch label {
+                font-size: 0.75rem;
+                padding: 8px 4px;
+            }
+
+            .filter-switch label i {
+                font-size: 0.7rem;
+                margin-right: 4px;
+            }
+
+            .filter-switch .background {
+                height: 32px;
+                top: 4px;
+                left: 4px;
+                width: 48%;
+            }
+
+            #optionFunciones:checked~.background {
+                left: 50%;
+            }
+
+            .categoria-chip {
+                padding: 5px 12px;
+                font-size: 0.65rem;
+                gap: 4px;
+            }
+
+            .categoria-chip i {
+                font-size: 0.6rem;
+            }
+
+            .categoria-chip .chip-count {
+                font-size: 0.5rem;
+                padding: 0 5px;
+            }
+
+            .btn-limpiar {
+                font-size: 0.6rem;
+                padding: 5px 10px;
+            }
+        }
+
+        /* Móviles muy muy pequeños (hasta 400px) */
+        @media (max-width: 400px) {
+            .navbar .logo {
+                font-size: 1.8rem;
+            }
+
+            .nav-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .search-wrapper {
+                width: 100%;
+            }
+
+            .btn-nav {
+                justify-content: center;
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+
+            .grid-peliculas {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 12px;
+            }
+
+            .filter-switch {
+                height: 40px;
+            }
+
+            .filter-switch label {
+                font-size: 0.7rem;
+                padding: 6px 4px;
+            }
+
+            .filter-switch label i {
+                font-size: 0.65rem;
+            }
+
+            .filter-switch .background {
+                height: 28px;
+                top: 4px;
+                left: 4px;
+            }
+
+            .funcion-card {
+                padding: 10px 12px;
+                gap: 8px;
+                min-height: 70px;
+            }
+
+            .funcion-card .funcion-poster {
+                width: 40px;
+                min-width: 40px;
+                height: 55px;
+            }
+
+            .funcion-card .funcion-info .funcion-titulo {
+                font-size: 0.75rem;
+            }
+
+            .funcion-card .funcion-info .funcion-detalle {
+                font-size: 0.65rem;
+                gap: 8px;
+            }
+
+            .funcion-card .funcion-hora {
+                font-size: 0.7rem;
+            }
+
+            .funcion-card .funcion-badge {
+                font-size: 0.55rem;
+                padding: 2px 8px;
+            }
+
+            .categoria-chip {
+                padding: 4px 10px;
+                font-size: 0.6rem;
+                gap: 4px;
+                border-radius: 20px;
+            }
+
+            .categoria-chip i {
+                font-size: 0.55rem;
+            }
+
+            .categoria-chip .chip-count {
+                font-size: 0.45rem;
+                padding: 0 4px;
+            }
+
+            .btn-limpiar {
+                font-size: 0.55rem;
+                padding: 4px 8px;
+                gap: 4px;
+            }
+
+            .carousel-slides {
+                height: 200px;
+            }
+
+            .carousel-item .info h2 {
+                font-size: 1.2rem;
+            }
+
+            .carousel-item .info p {
+                font-size: 0.75rem;
+                -webkit-line-clamp: 1;
+            }
+
+            .carousel-item .info {
+                padding: 12px 16px;
+            }
+
+            .carousel-dots span {
+                width: 8px;
+                height: 8px;
+            }
+
+            .carousel-dots span.active {
+                width: 20px;
+            }
+
+            .carousel-controls button {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+
+            .filtros {
+                padding: 10px 12px;
+                gap: 8px;
+                border-radius: 20px;
+            }
+
+            .filtros select,
+            .filtros .chip-group button {
+                font-size: 0.7rem;
+                padding: 6px 12px;
+            }
+
+            .filtros .chip-group button {
+                padding: 4px 10px;
+                font-size: 0.65rem;
             }
         }
     </style>
@@ -630,9 +1522,11 @@
     <div class="container">
         <!-- NAVBAR -->
         <nav class="navbar" id="navbar">
-            <div class="logo"><i class="fas fa-film"
-                    style="background:transparent; -webkit-text-fill-color: #667eea; margin-right: 6px;"></i> Cinema22
+            <div class="logo">
+                <a style="margin-right: -2px;">CINEMA</a>
+                <img src="logo22.png" alt="Cinema22" style="max-height: 45px; width: auto;">
             </div>
+
             <div class="nav-actions">
                 <div class="search-wrapper">
                     <i class="fas fa-search"></i>
@@ -640,6 +1534,9 @@
                 </div>
                 <button class="btn-nav" id="authBtn"><i class="fas fa-user"></i> <span id="authLabel">Iniciar
                         Sesión</span></button>
+                <button class="btn-nav" id="logoutBtn" style="display:none;">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
                 <button class="btn-nav admin" id="adminBtn" style="display:none;"><i class="fas fa-shield-alt"></i>
                     Panel Admin</button>
             </div>
@@ -655,27 +1552,68 @@
             <div class="carousel-dots" id="carouselDots"></div>
         </div>
 
-        <!-- FILTROS -->
-        <div class="filtros">
-            <select id="filtroDirector">
-                <option value="">Directores</option>
-            </select>
-            <select id="filtroCategoria">
-                <option value="">Categorías</option>
-            </select>
-            <div class="chip-group" id="filtroEstrellas">
-                <button data-min="0" class="active">Todas</button>
-                <button data-min="4">4★+</button>
-                <button data-min="3">3★+</button>
-                <button data-min="2">2★+</button>
+        <!-- FILTER SWITCH: CARTELERA / FUNCIONES -->
+        <div class="filter-switch-wrapper">
+            <div class="filter-switch" id="filterSwitch">
+                <input checked="" id="optionCartelera" name="viewOption" type="radio" />
+                <label class="option" for="optionCartelera"><i class="fas fa-film"></i> Cartelera</label>
+                <input id="optionFunciones" name="viewOption" type="radio" />
+                <label class="option" for="optionFunciones"><i class="fas fa-clock"></i> Funciones</label>
+                <span class="background"></span>
             </div>
-            <select id="filtroAno">
-                <option value="">Año</option>
-            </select>
         </div>
 
-        <!-- GRID -->
-        <div class="grid-peliculas" id="gridPeliculas"></div>
+        <!-- CATEGORÍAS DESTACADAS -->
+        <div class="categorias-destacadas visible" id="categoriasDestacadas">
+            <div class="categorias-row">
+                <button class="btn-limpiar" id="btnLimpiarCategorias" title="Limpiar filtros">
+                    <i class="fas fa-times-circle"></i> Limpiar
+                </button>
+                <div class="categorias-container" id="categoriasContainer">
+                    <!-- Se carga con JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN CARTELERA -->
+        <div id="seccionCartelera" class="seccion-visible">
+            <!-- FILTROS -->
+            <div class="filtros">
+                <select id="filtroDirector">
+                    <option value="">Directores</option>
+                </select>
+                <select id="filtroCategoria" display="none" hidden>
+                    <option value="">Categorías</option>
+                </select>
+                <div class="chip-group" id="filtroEstrellas">
+                    <button data-min="0" class="active">Todas</button>
+                    <button data-min="4">4★+</button>
+                    <button data-min="3">3★+</button>
+                    <button data-min="2">2★+</button>
+                </div>
+                <select id="filtroAno">
+                    <option value="">Año</option>
+                </select>
+            </div>
+
+            <!-- GRID -->
+            <div class="grid-peliculas" id="gridPeliculas"></div>
+        </div>
+
+        <!-- SECCIÓN FUNCIONES -->
+        <div id="seccionFunciones" class="seccion-oculta">
+            <div class="proximas-funciones" id="proximasFunciones">
+                <div class="titulo-seccion">
+                    <i class="fas fa-clock"></i> Próximas Funciones
+                    <span style="font-size:0.8rem; opacity:0.5; font-weight:300;">
+                        <i class="fas fa-circle" style="color:#4ade80; font-size:0.5rem;"></i> En vivo
+                    </span>
+                </div>
+                <div class="funciones-grid" id="funcionesGrid">
+                    <!-- Se carga con JS -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- TOAST CONTAINER -->
@@ -683,7 +1621,7 @@
 
     <script>
         // ============================================================
-        // CONFIGURACIÓN SUPABASE (¡REEMPLAZA CON TUS DATOS!)
+        // CONFIGURACIÓN SUPABASE
         // ============================================================
         const SUPABASE_URL = 'https://jhtgfyvdbcxymcnyaibg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpodGdmeXZkYmN4eW1jbnlhaWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzUyNzYsImV4cCI6MjA5NzE1MTI3Nn0.dX95IwFBrSgwVa0ldSKtWbUISGxDUzvHC6yms_rre2g';
@@ -715,15 +1653,48 @@
         }
 
         // ============================================================
+        // SWITCH ENTRE SECCIONES (con ocultar/mostrar categorías)
+        // ============================================================
+        document.querySelectorAll('#filterSwitch input').forEach(input => {
+            input.addEventListener('change', function () {
+                const seccionCartelera = document.getElementById('seccionCartelera');
+                const seccionFunciones = document.getElementById('seccionFunciones');
+                const categoriasDestacadas = document.getElementById('categoriasDestacadas');
+
+                if (this.id === 'optionCartelera') {
+                    seccionCartelera.className = 'seccion-visible';
+                    seccionFunciones.className = 'seccion-oculta';
+                    categoriasDestacadas.className = 'categorias-destacadas visible';
+
+                    if (!window.funcionesCargadas) {
+                        loadProximasFunciones();
+                        window.funcionesCargadas = true;
+                    }
+                } else {
+                    seccionCartelera.className = 'seccion-oculta';
+                    seccionFunciones.className = 'seccion-visible';
+                    categoriasDestacadas.className = 'categorias-destacadas oculto';
+
+                    if (!window.funcionesCargadas) {
+                        loadProximasFunciones();
+                        window.funcionesCargadas = true;
+                    }
+                }
+            });
+        });
+        // ============================================================
         // NAVBAR / AUTENTICACIÓN
         // ============================================================
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
+            const logoutBtn = document.getElementById('logoutBtn');
+
             if (session?.user) {
                 currentUser = session.user;
                 document.getElementById('authLabel').textContent = 'Mi Perfil';
                 document.getElementById('authBtn').innerHTML = `<i class="fas fa-user-circle"></i> ${currentUser.email}`;
-                // verificar si es admin
+                if (logoutBtn) logoutBtn.style.display = 'flex';
+
                 const { data: usuario } = await supabase
                     .from('usuario')
                     .select('rol')
@@ -739,8 +1710,29 @@
                 document.getElementById('authLabel').textContent = 'Iniciar Sesión';
                 document.getElementById('authBtn').innerHTML = `<i class="fas fa-user"></i> Iniciar Sesión`;
                 document.getElementById('adminBtn').style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'none';
             }
         }
+
+        async function logout() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                showToast('¡Hasta luego! 👋', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            } catch (error) {
+                showToast('Error al cerrar sesión: ' + error.message, 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logout);
+            }
+        });
 
         document.getElementById('authBtn').addEventListener('click', () => {
             if (currentUser) {
@@ -757,6 +1749,7 @@
         // CARRUSEL
         // ============================================================
         let carouselData = [];
+
         async function loadCarousel() {
             const { data, error } = await supabase
                 .from('pelicula')
@@ -777,19 +1770,18 @@
                 div.className = `carousel-item ${idx === 0 ? 'active' : ''}`;
                 div.style.backgroundImage = `url(${p.url_poster})`;
                 div.innerHTML = `
-          <div class="overlay"></div>
-          <div class="info">
-            <h2>${p.nombre_pelicula}</h2>
-            <p>${p.sinopsis?.slice(0, 120) || ''}…</p>
-          </div>
-        `;
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <h2>${p.nombre_pelicula}</h2>
+                        <p>${p.sinopsis?.slice(0, 120) || ''}…</p>
+                    </div>
+                `;
                 slides.appendChild(div);
                 const dot = document.createElement('span');
                 dot.className = idx === 0 ? 'active' : '';
                 dot.dataset.index = idx;
                 dots.appendChild(dot);
             });
-            // eventos dots
             dots.querySelectorAll('span').forEach(d => {
                 d.addEventListener('click', () => goToCarousel(parseInt(d.dataset.index)));
             });
@@ -821,8 +1813,14 @@
             }, 5000);
         }
 
-        document.getElementById('prevSlide').addEventListener('click', () => { goToCarousel(carouselIndex - 1); startAutoplay(); });
-        document.getElementById('nextSlide').addEventListener('click', () => { goToCarousel(carouselIndex + 1); startAutoplay(); });
+        document.getElementById('prevSlide').addEventListener('click', () => {
+            goToCarousel(carouselIndex - 1);
+            startAutoplay();
+        });
+        document.getElementById('nextSlide').addEventListener('click', () => {
+            goToCarousel(carouselIndex + 1);
+            startAutoplay();
+        });
         document.querySelector('.carousel-wrapper').addEventListener('mouseenter', () => clearInterval(carouselInterval));
         document.querySelector('.carousel-wrapper').addEventListener('mouseleave', startAutoplay);
 
@@ -833,11 +1831,137 @@
             const { data, error } = await supabase
                 .from('vista_peliculas')
                 .select('*');
-            if (error) { showToast('Error al cargar películas', 'error'); return; }
-            peliculas = data;
+
+            if (error) {
+                showToast('Error al cargar películas: ' + error.message, 'error');
+                return;
+            }
+
+            peliculas = data || [];
             filteredPeliculas = [...peliculas];
             renderGrid(filteredPeliculas);
             populateFilters();
+        }
+
+        // ============================================================
+        // PRÓXIMAS FUNCIONES
+        // ============================================================
+        async function loadProximasFunciones() {
+            const container = document.getElementById('funcionesGrid');
+
+            try {
+                const hoy = new Date().toISOString().split('T')[0];
+                const semana = new Date();
+                semana.setDate(semana.getDate() + 7);
+                const finSemana = semana.toISOString().split('T')[0];
+
+                const { data: funciones, error } = await supabase
+                    .from('funcion')
+                    .select(`
+                        id_funcion,
+                        fecha,
+                        hora,
+                        id_pelicula,
+                        pelicula:pelicula (
+                            nombre_pelicula,
+                            url_poster,
+                            sinopsis,
+                            director:director (nombre)
+                        )
+                    `)
+                    .gte('fecha', hoy)
+                    .lte('fecha', finSemana)
+                    .order('fecha', { ascending: true })
+                    .order('hora', { ascending: true })
+                    .limit(12);
+
+                if (error) throw error;
+
+                if (!funciones || funciones.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-funciones">
+                            <i class="fas fa-calendar-times"></i>
+                            <p>No hay funciones programadas en los próximos días</p>
+                            <p style="font-size:0.8rem; opacity:0.5;">Vuelve pronto para más novedades 🎬</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const funcionesPorDia = {};
+                funciones.forEach(f => {
+                    const fecha = f.fecha;
+                    if (!funcionesPorDia[fecha]) {
+                        funcionesPorDia[fecha] = [];
+                    }
+                    funcionesPorDia[fecha].push(f);
+                });
+
+                let html = '';
+                const dias = Object.keys(funcionesPorDia).sort();
+
+                dias.forEach(fecha => {
+                    const fechaObj = new Date(fecha + 'T00:00:00');
+                    const hoyObj = new Date();
+                    hoyObj.setHours(0, 0, 0, 0);
+
+                    let labelFecha = fechaObj.toLocaleDateString('es-ES', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'short'
+                    });
+
+                    if (fechaObj.getTime() === hoyObj.getTime()) {
+                        labelFecha = `🔥 ${labelFecha}`;
+                    }
+
+                    html += `
+                        <div style="grid-column: 1 / -1; margin-top: 12px; font-weight: 600; font-size: 1.1rem; color: #667eea; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 8px;">
+                            ${labelFecha}
+                        </div>
+                    `;
+
+                    funcionesPorDia[fecha].forEach(f => {
+                        const peli = f.pelicula;
+                        const poster = peli?.url_poster || 'https://via.placeholder.com/60x80/1a1a2e/667eea?text=No+Poster';
+                        const titulo = peli?.nombre_pelicula || 'Película sin título';
+                        const director = peli?.director?.nombre || 'Director desconocido';
+                        const horaFormateada = f.hora?.slice(0, 5) || '--:--';
+
+                        html += `
+                            <div class="funcion-card" onclick="window.location.href='detalle.html?id=${f.id_pelicula}'" style="cursor:pointer;">
+                                <div class="funcion-poster" style="background-image: url(${poster});"></div>
+                                <div class="funcion-info">
+                                    <div class="funcion-titulo">${titulo}</div>
+                                    <div class="funcion-detalle">
+                                        <span><i class="fas fa-user-tie"></i> ${director}</span>
+                                    </div>
+                                </div>
+                                <div class="funcion-hora">
+                                    <i class="fas fa-ticket-alt" style="font-size:0.7rem; opacity:0.5;"></i> ${horaFormateada}
+                                </div>
+                                <!--
+                                <div class="funcion-badge" display="none" hidden>
+                                    <i class="fas fa-circle" style="font-size:0.4rem; margin-right:4px;"></i> Disponible
+                                </div>
+                                -->
+                            </div>
+                        `;
+                    });
+                });
+
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error al cargar funciones:', error);
+                container.innerHTML = `
+                    <div class="empty-funciones">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Error al cargar las funciones</p>
+                        <p style="font-size:0.8rem; opacity:0.5;">${error.message}</p>
+                    </div>
+                `;
+            }
         }
 
         function renderGrid(lista) {
@@ -846,20 +1970,21 @@
             lista.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'card-pelicula';
-                const estrellas = '★'.repeat(Math.round(p.promedio_calificacion || 0)) + '☆'.repeat(5 - Math.round(p.promedio_calificacion || 0));
+                const estrellas = '★'.repeat(Math.round(p.promedio_calificacion || 0)) + '☆'.repeat(5 - Math.round(p
+                    .promedio_calificacion || 0));
                 card.innerHTML = `
-          <div class="poster" style="background-image: url(${p.url_poster || 'https://via.placeholder.com/300x450/1a1a2e/667eea?text=No+Poster'})">
-            <div class="overlay-card">
-              <div class="titulo-over">${p.nombre_pelicula}</div>
-              <div class="sinopsis-over">${p.sinopsis?.slice(0, 100) || ''}…</div>
-              <div class="meta-over"><span>${p.director || ''}</span><span>${p.ano_lanzamiento || ''}</span></div>
-            </div>
-          </div>
-          <div class="pie">
-            <h4>${p.nombre_pelicula}</h4>
-            <div class="estrellas">${estrellas} <span style="color:#aaa;font-weight:300;font-size:0.7rem;">${p.promedio_calificacion?.toFixed(1) || '0'}</span></div>
-          </div>
-        `;
+                    <div class="poster" style="background-image: url(${p.url_poster || 'https://via.placeholder.com/300x450/1a1a2e/667eea?text=No+Poster'})">
+                        <div class="overlay-card">
+                            <div class="titulo-over">${p.nombre_pelicula}</div>
+                            <div class="sinopsis-over">${p.sinopsis?.slice(0, 100) || ''}…</div>
+                            <div class="meta-over"><span>${p.director || ''}</span><span>${p.ano_lanzamiento || ''}</span></div>
+                        </div>
+                    </div>
+                    <div class="pie">
+                        <h4>${p.nombre_pelicula}</h4>
+                        <div class="estrellas">${estrellas} <span style="color:#aaa;font-weight:300;font-size:0.7rem;">${p.promedio_calificacion?.toFixed(1) || '0'}</span></div>
+                    </div>
+                `;
                 card.addEventListener('click', () => {
                     window.location.href = `detalle.html?id=${p.id_pelicula}`;
                 });
@@ -868,27 +1993,30 @@
         }
 
         async function populateFilters() {
-            // directores
-            const { data: dirs } = await supabase.from('director').select('id_director, nombre');
+            const { data: dirs } = await supabase.from('director').select('id_director, nombre').order('nombre');
             const selDir = document.getElementById('filtroDirector');
+            selDir.innerHTML = '<option value="">Todos los Directores</option>';
             dirs?.forEach(d => {
                 const opt = document.createElement('option');
                 opt.value = d.id_director;
                 opt.textContent = d.nombre;
                 selDir.appendChild(opt);
             });
-            // categorias
-            const { data: cats } = await supabase.from('categoria').select('id_categoria, nombre_categoria');
+
+            const { data: cats } = await supabase.from('categoria').select('id_categoria, nombre_categoria').order(
+                'nombre_categoria');
             const selCat = document.getElementById('filtroCategoria');
+            selCat.innerHTML = '<option value="">Todas las Categorías</option>';
             cats?.forEach(c => {
                 const opt = document.createElement('option');
                 opt.value = c.id_categoria;
                 opt.textContent = c.nombre_categoria;
                 selCat.appendChild(opt);
             });
-            // años (distinct)
-            const anos = [...new Set(peliculas.map(p => p.ano_lanzamiento).filter(Boolean))].sort();
+
+            const anos = [...new Set(peliculas.map(p => p.ano_lanzamiento).filter(Boolean))].sort((a, b) => b - a);
             const selAno = document.getElementById('filtroAno');
+            selAno.innerHTML = '<option value="">Todos los Años</option>';
             anos.forEach(a => {
                 const opt = document.createElement('option');
                 opt.value = a;
@@ -898,33 +2026,180 @@
         }
 
         // ============================================================
+        // CATEGORÍAS DESTACADAS (SIN SCROLL, CON WRAP)
+        // ============================================================
+        async function loadCategoriasDestacadas() {
+            const container = document.getElementById('categoriasContainer');
+
+            try {
+                const { data: categorias, error } = await supabase
+                    .from('categoria')
+                    .select(`
+                id_categoria,
+                nombre_categoria,
+                pelicula_categoria ( count )
+            `)
+                    .order('nombre_categoria');
+
+                if (error) throw error;
+
+                if (!categorias || categorias.length === 0) {
+                    container.innerHTML = `<span style="opacity:0.4; font-size:0.85rem;">No hay categorías disponibles</span>`;
+                    return;
+                }
+
+                // Lista de íconos disponibles
+                const iconosDisponibles = [
+                    'fa-tag', 'fa-star', 'fa-fire', 'fa-crown', 'fa-mask',
+                    'fa-laugh', 'fa-bolt', 'fa-ghost', 'fa-rocket', 'fa-compass',
+                    'fa-heart', 'fa-skull', 'fa-dragon', 'fa-globe', 'fa-search',
+                    'fa-users', 'fa-shield-halved', 'fa-music', 'fa-film', 'fa-video',
+                    'fa-camera', 'fa-gamepad', 'fa-palette', 'fa-meteor', 'fa-sparkles'
+                ];
+
+                // Colores degradado para cada categoría (tonos morados/azules)
+                const coloresDisponibles = [
+                    '#667eea', '#764ba2', '#8b5cf6', '#7c3aed', '#6d28d9',
+                    '#5b21b6', '#4f46e5', '#6366f1', '#818cf8', '#a5b4fc',
+                    '#c4b5fd', '#ddd6fe', '#a78bfa', '#8b5cf6', '#7c3aed'
+                ];
+
+                function getColorPorIndice(index) {
+                    return coloresDisponibles[index % coloresDisponibles.length];
+                }
+
+                function getIconoPorIndice(index) {
+                    return iconosDisponibles[index % iconosDisponibles.length];
+                }
+
+                let html = '';
+                categorias.forEach((c, index) => {
+                    const count = c.pelicula_categoria?.[0]?.count || 0;
+                    const icon = getIconoPorIndice(index);
+                    const color = getColorPorIndice(index);
+
+                    html += `
+                <button class="categoria-chip" data-id="${c.id_categoria}" data-nombre="${c.nombre_categoria}" 
+                        style="border-color: ${color}33;">
+                    <i class="fas ${icon}" style="color:${color};"></i>
+                    ${c.nombre_categoria}
+                    <span class="chip-count">${count}</span>
+                </button>
+            `;
+                });
+
+                container.innerHTML = html;
+
+                // Evento click para filtrar por categoría
+                container.querySelectorAll('.categoria-chip').forEach(chip => {
+                    chip.addEventListener('click', function () {
+                        const id = this.dataset.id;
+
+                        this.classList.toggle('active');
+
+                        const selectCat = document.getElementById('filtroCategoria');
+                        if (this.classList.contains('active')) {
+                            container.querySelectorAll('.categoria-chip').forEach(c => {
+                                if (c !== this) c.classList.remove('active');
+                            });
+                            selectCat.value = id;
+                        } else {
+                            selectCat.value = '';
+                        }
+
+                        selectCat.dispatchEvent(new Event('change'));
+                    });
+                });
+
+                // ============================================================
+                // BOTÓN LIMPIAR - Desactiva todos los filtros de categoría
+                // ============================================================
+                const btnLimpiar = document.getElementById('btnLimpiarCategorias');
+                if (btnLimpiar) {
+                    btnLimpiar.addEventListener('click', function () {
+                        // Desactivar todos los chips
+                        container.querySelectorAll('.categoria-chip').forEach(c => {
+                            c.classList.remove('active');
+                        });
+
+                        // Limpiar el select de categorías
+                        const selectCat = document.getElementById('filtroCategoria');
+                        selectCat.value = '';
+
+                        // Disparar el evento change para actualizar el grid
+                        selectCat.dispatchEvent(new Event('change'));
+
+                        // Feedback visual
+                        showToast('Filtros de categoría limpiados ✨', 'info');
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error al cargar categorías:', error);
+                container.innerHTML = `<span style="opacity:0.4; font-size:0.85rem;">Error al cargar categorías</span>`;
+            }
+        }
+
+
+        // ============================================================
         // FILTROS
         // ============================================================
-        function applyFilters() {
+        async function applyFilters() {
             const search = document.getElementById('searchInput').value.toLowerCase().trim();
             const dir = document.getElementById('filtroDirector').value;
             const cat = document.getElementById('filtroCategoria').value;
             const estrellaMin = parseInt(document.querySelector('#filtroEstrellas .active')?.dataset.min || 0);
             const ano = document.getElementById('filtroAno').value;
 
-            let result = peliculas.filter(p => {
-                if (search && !p.nombre_pelicula.toLowerCase().includes(search)) return false;
-                if (dir && p.id_director != dir) return false;
-                if (ano && p.ano_lanzamiento != ano) return false;
-                if (estrellaMin > 0 && (p.promedio_calificacion || 0) < estrellaMin) return false;
-                return true;
-            });
-            // filtro categoria (requiere consulta extra, simplificamos)
-            if (cat) {
-                // usamos una promesa para no bloquear, pero por ahora filtramos en memoria con pelicula_categoria
-                // (en producción se haría con join, aquí asumimos que tenemos los datos)
-                // Dejamos pasar todo por simplicidad de demo
+            let resultados = [...peliculas];
+
+            if (search) {
+                resultados = resultados.filter(p =>
+                    p.nombre_pelicula.toLowerCase().includes(search)
+                );
             }
-            filteredPeliculas = result;
-            renderGrid(result);
+
+            if (dir) {
+                resultados = resultados.filter(p =>
+                    p.id_director == dir
+                );
+            }
+
+            if (ano) {
+                resultados = resultados.filter(p =>
+                    p.ano_lanzamiento == ano
+                );
+            }
+
+            if (estrellaMin > 0) {
+                resultados = resultados.filter(p =>
+                    (p.promedio_calificacion || 0) >= estrellaMin
+                );
+            }
+
+            if (cat) {
+                const { data: pelisCat, error } = await supabase
+                    .from('pelicula_categoria')
+                    .select('id_pelicula')
+                    .eq('id_categoria', parseInt(cat));
+
+                if (error) {
+                    showToast('Error al filtrar por categoría', 'error');
+                    return;
+                }
+
+                if (pelisCat && pelisCat.length > 0) {
+                    const ids = pelisCat.map(p => p.id_pelicula);
+                    resultados = resultados.filter(p => ids.includes(p.id_pelicula));
+                } else {
+                    resultados = [];
+                }
+            }
+
+            filteredPeliculas = resultados;
+            renderGrid(filteredPeliculas);
         }
 
-        // Eventos filtros
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('filtroDirector').addEventListener('change', applyFilters);
         document.getElementById('filtroCategoria').addEventListener('change', applyFilters);
@@ -944,16 +2219,67 @@
             await checkAuth();
             await loadCarousel();
             await loadPeliculas();
+            await loadCategoriasDestacadas();
+            // Las funciones se cargan cuando el usuario cambia al tab "Funciones"
+            window.funcionesCargadas = false;
         }
         init();
 
-        // Sticky navbar shadow
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
         });
-
-        // Redirigir login si no autenticado (para páginas protegidas se hace en cada una)
     </script>
+    <!-- FOOTER -->
+    <footer
+        style="margin-top: 60px; padding: 40px 24px 20px; border-top: 1px solid rgba(255,255,255,0.04); background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); border-radius: 28px 28px 0 0;">
+        <div style="max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px;">
+            <!-- Logo o imagen -->
+            <div style="display: flex; justify-content: center;">
+                <img src="cinesincortes.png" alt="Logo Cine" style="max-height: 100px; width: auto;">
+            </div>
+            <!-- Redes sociales -->
+            <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+                <a href="#"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://www.facebook.com/Canal22Mexico/#"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.youtube.com/canal22"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://www.tiktok.com/@canal22mexico"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="https://www.instagram.com/canal22oficial"
+                    style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #a8a4d4; font-size: 1.2rem; transition: all 0.3s ease; text-decoration: none;"
+                    onmouseover="this.style.background='rgba(102,126,234,0.2)'; this.style.borderColor='#667eea'; this.style.color='#fff'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(102,126,234,0.2)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='#a8a4d4'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+
+            <!-- Copyright -->
+            <div style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.04);">
+                <p style="color: #6a6690; font-size: 0.8rem; letter-spacing: 0.3px; margin: 0;">
+                    Copyright © 2023 Television Metropolitana S.A. de C.V. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
 </body>
 
 </html>

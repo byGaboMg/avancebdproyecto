@@ -66,32 +66,74 @@
         }
 
         .sidebar .logo-mini {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 24px;
+            padding: 0 12px;
+            white-space: nowrap;
+            width: 100%;
+            min-height: 50px;
+        }
+
+        /* Logo solo (versión comprimida) */
+        .sidebar .logo-mini .logo-solo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar .logo-mini .logo-solo img {
+            max-height: 45px;
+            width: auto;
+        }
+
+        /* Título completo (versión expandida) */
+        .sidebar .logo-mini .logo-completo {
+            display: none;
+            align-items: center;
+            gap: 0;
+        }
+
+        .sidebar .logo-mini .logo-completo a {
             font-size: 1.8rem;
             font-weight: 700;
             background: linear-gradient(135deg, #f093fb, #f5576c, #667eea);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 24px;
-            white-space: nowrap;
+            margin-right: -2px;
+        }
+
+        .sidebar .logo-mini .logo-completo img {
+            max-height: 45px;
+            width: auto;
+            -webkit-text-fill-color: initial;
+        }
+
+        /* Al hacer hover, mostrar título completo y ocultar logo solo */
+        .sidebar:hover .logo-mini .logo-solo {
+            display: none;
+        }
+
+        .sidebar:hover .logo-mini .logo-completo {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 12px;
         }
 
-        .sidebar .logo-mini i {
-            -webkit-text-fill-color: #667eea;
-            font-size: 1.4rem;
+        .sidebar .logo-mini a {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f093fb, #f5576c, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: -2px;
+            transition: all 0.3s ease;
         }
 
-        .sidebar .logo-mini span {
-            font-size: 1rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar:hover .logo-mini span {
-            opacity: 1;
+        .sidebar .logo-mini img {
+            max-height: 45px;
+            width: auto;
+            -webkit-text-fill-color: initial;
         }
 
         .sidebar .nav-item {
@@ -136,6 +178,7 @@
             color: #fff;
             border-left: 3px solid #667eea;
         }
+
 
         /* ===== MAIN CONTENT ===== */
         .main-content {
@@ -309,6 +352,15 @@
             background: rgba(245, 87, 108, 0.25);
         }
 
+        .btn-crud.success {
+            background: rgba(74, 222, 128, 0.12);
+            border-color: rgba(74, 222, 128, 0.15);
+        }
+
+        .btn-crud.success:hover {
+            background: rgba(74, 222, 128, 0.25);
+        }
+
         .form-crud {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -359,6 +411,21 @@
 
         .form-crud .btn-submit:hover {
             transform: scale(1.02);
+        }
+
+        .form-crud .btn-cancel {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px;
+            color: #aaa;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-crud .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         /* Tabla */
@@ -413,6 +480,14 @@
 
         td .acciones button.eliminar:hover {
             color: #f5576c;
+        }
+
+        .pelicula-poster-mini {
+            width: 40px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         /* Modal confirmación */
@@ -563,6 +638,11 @@
             }
         }
 
+        .editando {
+            border-color: #667eea !important;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.15) !important;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 60px;
@@ -586,7 +666,17 @@
 <body>
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
-        <div class="logo-mini"><i class="fas fa-film"></i><span>Cinema22</span></div>
+        <div class="logo-mini">
+            <!-- Logo solo (versión comprimida) -->
+            <div class="logo-solo">
+                <img src="logo22.png" alt="Cinema22">
+            </div>
+            <!-- Título completo (versión expandida) -->
+            <div class="logo-completo">
+                <a>CINEMA</a>
+                <img src="logo22.png" alt="Cinema22">
+            </div>
+        </div>
         <button class="nav-item active" data-section="dashboard"><i
                 class="fas fa-chart-pie"></i><span>Dashboard</span></button>
         <button class="nav-item" data-section="peliculas"><i class="fas fa-film"></i><span>Películas</span></button>
@@ -629,8 +719,6 @@
                 <p style="opacity:0.5; font-size:0.85rem;"><i class="fas fa-info-circle"></i> Panel de control con
                     estadísticas generales</p>
             </div>
-
-            <!-- Secciones CRUD se inyectan con JS -->
         </div>
     </main>
 
@@ -658,6 +746,7 @@
 
         let currentUser = null;
         let modalResolve = null;
+        let peliculaEditando = null;
 
         // ============================================================
         // TOASTS
@@ -757,12 +846,9 @@
         // ============================================================
         // CRUD DINÁMICO
         // ============================================================
-        let crudData = {};
-
         async function cargarCRUD(tipo) {
             const container = document.getElementById(`section-${tipo}`);
             if (!container) return;
-            // Si ya existe la sección, no recargar
             if (container.dataset.cargado === 'true') return;
             container.dataset.cargado = 'true';
 
@@ -779,50 +865,79 @@
             container.innerHTML = html;
         }
 
-        // ========== PELÍCULAS ==========
+        // ============================================================
+        // PELÍCULAS (CON EDICIÓN COMPLETA)
+        // ============================================================
         async function renderPeliculas() {
             const { data: peliculas } = await supabase.from('pelicula').select('*, director(nombre)').order('id_pelicula');
-            const { data: directores } = await supabase.from('director').select('*');
-            const { data: categorias } = await supabase.from('categoria').select('*');
+            const { data: directores } = await supabase.from('director').select('*').order('nombre');
+            const { data: categorias } = await supabase.from('categoria').select('*').order('nombre_categoria');
 
             let html = `
-        <div class="crud-header"><h2><i class="fas fa-film"></i> Películas</h2></div>
-        <div class="form-crud" id="formPelicula">
-          <input type="text" id="pNombre" placeholder="Nombre">
-          <input type="number" id="pAno" placeholder="Año">
-          <input type="text" id="pPais" placeholder="País">
-          <input type="text" id="pPoster" placeholder="URL Poster">
-          <input type="text" id="pFicha" placeholder="Ficha técnica">
-          <textarea id="pSinopsis" placeholder="Sinopsis"></textarea>
-          <select id="pDirector"><option value="">Director</option>
-            ${directores.map(d => `<option value="${d.id_director}">${d.nombre}</option>`).join('')}
-          </select>
-          <select id="pCategorias" multiple style="min-height:60px;">
-            ${categorias.map(c => `<option value="${c.id_categoria}">${c.nombre_categoria}</option>`).join('')}
-          </select>
-          <button class="btn-submit" onclick="guardarPelicula()"><i class="fas fa-save"></i> Guardar</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>ID</th><th>Nombre</th><th>Año</th><th>Director</th><th>Acciones</th></tr></thead>
-            <tbody>
-              ${peliculas.map(p => `
-                <tr>
-                  <td>${p.id_pelicula}</td>
-                  <td>${p.nombre_pelicula}</td>
-                  <td>${p.ano_lanzamiento}</td>
-                  <td>${p.director?.nombre || 'N/A'}</td>
-                  <td><div class="acciones">
-                    <button class="editar" onclick="editarPelicula(${p.id_pelicula})"><i class="fas fa-edit"></i></button>
-                    <button class="eliminar" onclick="eliminarPelicula(${p.id_pelicula})"><i class="fas fa-trash"></i></button>
-                  </div></td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
+                <div class="crud-header">
+                    <h2><i class="fas fa-film"></i> Películas</h2>
+                    <button class="btn-crud success" onclick="mostrarFormPelicula()"><i class="fas fa-plus"></i> Nueva Película</button>
+                </div>
+                <div class="form-crud" id="formPelicula" style="display:none;">
+                    <input type="text" id="pNombre" placeholder="Nombre *">
+                    <input type="number" id="pAno" placeholder="Año *">
+                    <input type="text" id="pPais" placeholder="País">
+                    <input type="text" id="pPoster" placeholder="URL Poster">
+                    <input type="text" id="pFicha" placeholder="Ficha técnica">
+                    <textarea id="pSinopsis" placeholder="Sinopsis"></textarea>
+                    <select id="pDirector"><option value="">Director *</option>
+                        ${directores.map(d => `<option value="${d.id_director}">${d.nombre}</option>`).join('')}
+                    </select>
+                    <select id="pCategorias" multiple style="min-height:60px;">
+                        ${categorias.map(c => `<option value="${c.id_categoria}">${c.nombre_categoria}</option>`).join('')}
+                    </select>
+                    <button class="btn-submit" onclick="guardarPelicula()"><i class="fas fa-save"></i> Guardar</button>
+                    <button class="btn-cancel" onclick="ocultarFormPelicula()">Cancelar</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Poster</th><th>ID</th><th>Nombre</th><th>Año</th><th>Director</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                            ${peliculas.map(p => `
+                                <tr id="fila-${p.id_pelicula}">
+                                    <td><img class="pelicula-poster-mini" src="${p.url_poster || 'https://via.placeholder.com/40x60/1a1a2e/667eea?text=No'}" alt="poster"></td>
+                                    <td>${p.id_pelicula}</td>
+                                    <td>${p.nombre_pelicula}</td>
+                                    <td>${p.ano_lanzamiento}</td>
+                                    <td>${p.director?.nombre || 'N/A'}</td>
+                                    <td>
+                                        <div class="acciones">
+                                            <button class="editar" onclick="editarPelicula(${p.id_pelicula})"><i class="fas fa-edit"></i></button>
+                                            <button class="eliminar" onclick="eliminarPelicula(${p.id_pelicula})"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             return html;
+        }
+
+        function mostrarFormPelicula() {
+            const form = document.getElementById('formPelicula');
+            form.style.display = 'grid';
+            peliculaEditando = null;
+            document.getElementById('pNombre').value = '';
+            document.getElementById('pAno').value = '';
+            document.getElementById('pPais').value = '';
+            document.getElementById('pPoster').value = '';
+            document.getElementById('pFicha').value = '';
+            document.getElementById('pSinopsis').value = '';
+            document.getElementById('pDirector').value = '';
+            document.getElementById('pCategorias').value = '';
+            document.getElementById('pNombre').focus();
+        }
+
+        function ocultarFormPelicula() {
+            document.getElementById('formPelicula').style.display = 'none';
+            peliculaEditando = null;
         }
 
         window.guardarPelicula = async function () {
@@ -841,39 +956,118 @@
             }
 
             try {
-                const { data: peli, error } = await supabase
-                    .from('pelicula')
-                    .insert({
-                        nombre_pelicula: nombre,
-                        ano_lanzamiento: ano,
-                        pais: pais || 'Desconocido',
-                        url_poster: poster || 'https://via.placeholder.com/300x450/1a1a2e/667eea?text=No+Poster',
-                        ficha: ficha || null,
-                        sinopsis: sinopsis || 'Sin sinopsis',
-                        id_director: parseInt(director)
-                    })
-                    .select()
-                    .single();
-                if (error) throw error;
-                // Asignar categorías
-                if (categorias.length && peli) {
-                    const inserts = categorias.map(c => ({
-                        id_pelicula: peli.id_pelicula,
-                        id_categoria: parseInt(c)
-                    }));
-                    await supabase.from('pelicula_categoria').insert(inserts);
+                const datos = {
+                    nombre_pelicula: nombre,
+                    ano_lanzamiento: ano,
+                    pais: pais || 'Desconocido',
+                    url_poster: poster || 'https://via.placeholder.com/300x450/1a1a2e/667eea?text=No+Poster',
+                    ficha: ficha || null,
+                    sinopsis: sinopsis || 'Sin sinopsis',
+                    id_director: parseInt(director)
+                };
+
+                let result;
+                if (peliculaEditando) {
+                    // Actualizar
+                    result = await supabase
+                        .from('pelicula')
+                        .update(datos)
+                        .eq('id_pelicula', peliculaEditando)
+                        .select()
+                        .single();
+                } else {
+                    // Crear nueva
+                    result = await supabase
+                        .from('pelicula')
+                        .insert(datos)
+                        .select()
+                        .single();
                 }
-                showToast('Película creada ✅', 'success');
+
+                if (result.error) throw result.error;
+
+                const peli = result.data;
+
+                // Actualizar categorías (eliminar y volver a insertar)
+                if (peli) {
+                    // Eliminar categorías existentes
+                    await supabase
+                        .from('pelicula_categoria')
+                        .delete()
+                        .eq('id_pelicula', peli.id_pelicula);
+
+                    // Insertar nuevas categorías
+                    if (categorias.length > 0) {
+                        const inserts = categorias.map(c => ({
+                            id_pelicula: peli.id_pelicula,
+                            id_categoria: parseInt(c)
+                        }));
+                        await supabase.from('pelicula_categoria').insert(inserts);
+                    }
+                }
+
+                showToast(peliculaEditando ? 'Película actualizada ✅' : 'Película creada ✅', 'success');
+                ocultarFormPelicula();
                 recargarSeccion('peliculas');
             } catch (e) {
                 showToast('Error: ' + e.message, 'error');
             }
         };
 
+        window.editarPelicula = async function (id) {
+            peliculaEditando = id;
+            const form = document.getElementById('formPelicula');
+            form.style.display = 'grid';
+
+            // Cargar datos de la película
+            const { data: peli, error } = await supabase
+                .from('pelicula')
+                .select('*')
+                .eq('id_pelicula', id)
+                .single();
+
+            if (error) {
+                showToast('Error al cargar datos', 'error');
+                return;
+            }
+
+            // Cargar categorías de la película
+            const { data: catsPeli } = await supabase
+                .from('pelicula_categoria')
+                .select('id_categoria')
+                .eq('id_pelicula', id);
+
+            const categoriasPeli = catsPeli?.map(c => c.id_categoria) || [];
+
+            document.getElementById('pNombre').value = peli.nombre_pelicula;
+            document.getElementById('pAno').value = peli.ano_lanzamiento;
+            document.getElementById('pPais').value = peli.pais || '';
+            document.getElementById('pPoster').value = peli.url_poster || '';
+            document.getElementById('pFicha').value = peli.ficha || '';
+            document.getElementById('pSinopsis').value = peli.sinopsis || '';
+            document.getElementById('pDirector').value = peli.id_director;
+
+            // Seleccionar categorías
+            const selectCats = document.getElementById('pCategorias');
+            for (let option of selectCats.options) {
+                option.selected = categoriasPeli.includes(parseInt(option.value));
+            }
+
+            document.getElementById('pNombre').focus();
+            form.scrollIntoView({ behavior: 'smooth' });
+        };
+
         window.eliminarPelicula = async function (id) {
-            const confirmar = await abrirModal('¿Eliminar esta película y sus relaciones?');
+            const confirmar = await abrirModal('¿Eliminar esta película y todas sus relaciones?');
             if (!confirmar) return;
             try {
+                // Eliminar relaciones en pelicula_categoria
+                await supabase.from('pelicula_categoria').delete().eq('id_pelicula', id);
+                // Eliminar reseñas
+                await supabase.from('resena').delete().eq('id_pelicula', id);
+                // Eliminar funciones
+                await supabase.from('funcion').delete().eq('id_pelicula', id);
+                // Eliminar película
                 const { error } = await supabase.from('pelicula').delete().eq('id_pelicula', id);
                 if (error) throw error;
                 showToast('Película eliminada', 'success');
@@ -883,128 +1077,197 @@
             }
         };
 
-        window.editarPelicula = function (id) {
-            showToast('Edición avanzada: Próximamente 🚀', 'info');
-        };
-
-        // ========== DIRECTORES ==========
+        // ============================================================
+        // DIRECTORES (CON ELIMINACIÓN CORREGIDA)
+        // ============================================================
         async function renderDirectores() {
             const { data: directores } = await supabase.from('director').select('*').order('id_director');
             let html = `
-        <div class="crud-header"><h2><i class="fas fa-user-tie"></i> Directores</h2></div>
-        <div class="form-crud">
-          <input type="text" id="dNombre" placeholder="Nombre del director">
-          <button class="btn-submit" onclick="guardarDirector()"><i class="fas fa-save"></i> Agregar</button>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;">
-          ${directores.map(d => `
-            <div style="background:rgba(255,255,255,0.02);border-radius:16px;padding:12px 18px;border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:12px;">
-              <span>${d.nombre}</span>
-              <button class="btn-crud eliminar" style="padding:4px 12px;font-size:0.8rem;" onclick="eliminarDirector(${d.id_director})"><i class="fas fa-trash"></i></button>
-            </div>
-          `).join('')}
-        </div>
-      `;
+                <div class="crud-header">
+                    <h2><i class="fas fa-user-tie"></i> Directores</h2>
+                    <button class="btn-crud success" onclick="mostrarFormDirector()"><i class="fas fa-plus"></i> Nuevo Director</button>
+                </div>
+                <div class="form-crud" id="formDirector" style="display:none;">
+                    <input type="text" id="dNombre" placeholder="Nombre del director">
+                    <button class="btn-submit" onclick="guardarDirector()"><i class="fas fa-save"></i> Guardar</button>
+                    <button class="btn-cancel" onclick="ocultarFormDirector()">Cancelar</button>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;">
+                    ${directores.map(d => `
+                        <div style="background:rgba(255,255,255,0.02);border-radius:16px;padding:12px 18px;border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:12px;">
+                            <span>${d.nombre}</span>
+                            <button class="btn-crud eliminar" style="padding:4px 12px;font-size:0.8rem;" onclick="eliminarDirector(${d.id_director}, '${d.nombre}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
             return html;
+        }
+
+        function mostrarFormDirector() {
+            document.getElementById('formDirector').style.display = 'grid';
+            document.getElementById('dNombre').focus();
+        }
+
+        function ocultarFormDirector() {
+            document.getElementById('formDirector').style.display = 'none';
+            document.getElementById('dNombre').value = '';
         }
 
         window.guardarDirector = async function () {
             const nombre = document.getElementById('dNombre').value.trim();
             if (!nombre) { showToast('Ingresa un nombre', 'error'); return; }
             try {
-                await supabase.from('director').insert({ nombre });
+                const { error } = await supabase.from('director').insert({ nombre });
+                if (error) throw error;
                 showToast('Director agregado ✅', 'success');
+                ocultarFormDirector();
                 recargarSeccion('directores');
             } catch (e) { showToast('Error: ' + e.message, 'error'); }
         };
 
-        window.eliminarDirector = async function (id) {
-            const confirmar = await abrirModal('¿Eliminar este director?');
-            if (!confirmar) return;
+        window.eliminarDirector = async function (id, nombre) {
+            if (!confirm(`¿Eliminar el director "${nombre}"?`)) return;
             try {
-                await supabase.from('director').delete().eq('id_director', id);
-                showToast('Director eliminado', 'success');
+                const { error } = await supabase.from('director').delete().eq('id_director', id);
+                if (error) throw error;
+                showToast('Director eliminado ✅', 'success');
                 recargarSeccion('directores');
-            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+                cargarEstadisticas();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
         };
 
-        // ========== CATEGORÍAS ==========
+        // ============================================================
+        // CATEGORÍAS (CON ELIMINACIÓN CORREGIDA)
+        // ============================================================
         async function renderCategorias() {
             const { data: categorias } = await supabase.from('categoria').select('*').order('id_categoria');
-            const colores = ['#667eea', '#f5576c', '#f093fb', '#4ade80', '#f5b342', '#60a5fa', '#a78bfa'];
+
             let html = `
-        <div class="crud-header"><h2><i class="fas fa-tags"></i> Categorías</h2></div>
-        <div class="form-crud">
-          <input type="text" id="cNombre" placeholder="Nombre categoría">
-          <button class="btn-submit" onclick="guardarCategoria()"><i class="fas fa-save"></i> Agregar</button>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;">
-          ${categorias.map((c, i) => `
-            <span style="background:${colores[i % colores.length]}22;border:1px solid ${colores[i % colores.length]}44;border-radius:40px;padding:6px 18px;display:inline-flex;align-items:center;gap:10px;">
-              ${c.nombre_categoria}
-              <button onclick="eliminarCategoria(${c.id_categoria})" style="background:transparent;border:none;color:#f5576c;cursor:pointer;"><i class="fas fa-times"></i></button>
-            </span>
-          `).join('')}
-        </div>
-      `;
+                <div class="crud-header">
+                    <h2><i class="fas fa-tags"></i> Categorías</h2>
+                    <button class="btn-crud success" onclick="mostrarFormCategoria()"><i class="fas fa-plus"></i> Nueva Categoría</button>
+                </div>
+                <div class="form-crud" id="formCategoria" style="display:none;">
+                    <input type="text" id="cNombre" placeholder="Nombre de la categoría">
+                    <button class="btn-submit" onclick="guardarCategoria()"><i class="fas fa-save"></i> Guardar</button>
+                    <button class="btn-cancel" onclick="ocultarFormCategoria()">Cancelar</button>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;">
+                    ${categorias.map(c => `
+                        <div style="background:rgba(255,255,255,0.02);border-radius:16px;padding:12px 18px;border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:12px;">
+                            <span>${c.nombre_categoria}</span>
+                            <button class="btn-crud eliminar" style="padding:4px 12px;font-size:0.8rem;" onclick="eliminarCategoria(${c.id_categoria}, '${c.nombre_categoria}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
             return html;
+        }
+
+        function mostrarFormCategoria() {
+            document.getElementById('formCategoria').style.display = 'grid';
+            document.getElementById('cNombre').focus();
+        }
+
+        function ocultarFormCategoria() {
+            document.getElementById('formCategoria').style.display = 'none';
+            document.getElementById('cNombre').value = '';
         }
 
         window.guardarCategoria = async function () {
             const nombre = document.getElementById('cNombre').value.trim();
             if (!nombre) { showToast('Ingresa un nombre', 'error'); return; }
             try {
-                await supabase.from('categoria').insert({ nombre_categoria: nombre });
+                const { error } = await supabase.from('categoria').insert({ nombre_categoria: nombre });
+                if (error) {
+                    if (error.code === '23505') {
+                        showToast('Ya existe una categoría con ese nombre', 'error');
+                    } else {
+                        throw error;
+                    }
+                    return;
+                }
                 showToast('Categoría agregada ✅', 'success');
+                ocultarFormCategoria();
                 recargarSeccion('categorias');
             } catch (e) { showToast('Error: ' + e.message, 'error'); }
         };
 
-        window.eliminarCategoria = async function (id) {
-            const confirmar = await abrirModal('¿Eliminar esta categoría?');
-            if (!confirmar) return;
+        window.eliminarCategoria = async function (id, nombre) {
+            if (!confirm(`¿Eliminar la categoría "${nombre}"?`)) return;
             try {
-                await supabase.from('categoria').delete().eq('id_categoria', id);
-                showToast('Categoría eliminada', 'success');
+                // Eliminar relaciones primero
+                await supabase.from('pelicula_categoria').delete().eq('id_categoria', id);
+                // Eliminar categoría
+                const { error } = await supabase.from('categoria').delete().eq('id_categoria', id);
+                if (error) throw error;
+                showToast('Categoría eliminada ✅', 'success');
                 recargarSeccion('categorias');
-            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+                cargarEstadisticas();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
         };
 
-        // ========== FUNCIONES ==========
+        // ============================================================
+        // FUNCIONES
+        // ============================================================
         async function renderFunciones() {
             const { data: funciones } = await supabase
                 .from('funcion')
                 .select('*, pelicula(nombre_pelicula)')
-                .order('fecha')
+                .order('fecha', { ascending: true })
                 .limit(50);
             const { data: peliculas } = await supabase.from('pelicula').select('id_pelicula, nombre_pelicula');
+
             let html = `
-        <div class="crud-header"><h2><i class="fas fa-clock"></i> Funciones</h2></div>
-        <div class="form-crud">
-          <input type="date" id="fFecha">
-          <input type="time" id="fHora">
-          <select id="fPelicula"><option value="">Película</option>
-            ${peliculas.map(p => `<option value="${p.id_pelicula}">${p.nombre_pelicula}</option>`).join('')}
-          </select>
-          <button class="btn-submit" onclick="guardarFuncion()"><i class="fas fa-save"></i> Agregar</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Hora</th><th>Película</th><th>Acciones</th></tr></thead>
-            <tbody>
-              ${funciones.map(f => `
-                <tr>
-                  <td>${f.fecha}</td>
-                  <td>${f.hora.slice(0, 5)}</td>
-                  <td>${f.pelicula?.nombre_pelicula || 'N/A'}</td>
-                  <td><button class="btn-crud eliminar" style="padding:4px 12px;font-size:0.8rem;" onclick="eliminarFuncion(${f.id_funcion})"><i class="fas fa-trash"></i></button></td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
+                <div class="crud-header">
+                    <h2><i class="fas fa-clock"></i> Funciones</h2>
+                    <button class="btn-crud success" onclick="mostrarFormFuncion()"><i class="fas fa-plus"></i> Nueva Función</button>
+                </div>
+                <div class="form-crud" id="formFuncion" style="display:none;">
+                    <input type="date" id="fFecha">
+                    <input type="time" id="fHora">
+                    <select id="fPelicula"><option value="">Película</option>
+                        ${peliculas.map(p => `<option value="${p.id_pelicula}">${p.nombre_pelicula}</option>`).join('')}
+                    </select>
+                    <button class="btn-submit" onclick="guardarFuncion()"><i class="fas fa-save"></i> Guardar</button>
+                    <button class="btn-cancel" onclick="ocultarFormFuncion()">Cancelar</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Fecha</th><th>Hora</th><th>Película</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                            ${funciones.map(f => `
+                                <tr>
+                                    <td>${f.fecha}</td>
+                                    <td>${f.hora.slice(0, 5)}</td>
+                                    <td>${f.pelicula?.nombre_pelicula || 'N/A'}</td>
+                                    <td><button class="btn-crud eliminar" style="padding:4px 12px;font-size:0.8rem;" onclick="eliminarFuncion(${f.id_funcion})"><i class="fas fa-trash"></i></button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
             return html;
+        }
+
+        function mostrarFormFuncion() {
+            document.getElementById('formFuncion').style.display = 'grid';
+            document.getElementById('fFecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('fHora').value = '12:00';
+        }
+
+        function ocultarFormFuncion() {
+            document.getElementById('formFuncion').style.display = 'none';
         }
 
         window.guardarFuncion = async function () {
@@ -1017,14 +1280,20 @@
             }
             try {
                 const { error } = await supabase.from('funcion').insert({
-                    fecha, hora, id_pelicula: parseInt(pelicula)
+                    fecha,
+                    hora,
+                    id_pelicula: parseInt(pelicula)
                 });
                 if (error) {
-                    if (error.code === '23505') showToast('Ya existe esa función (duplicado)', 'error');
-                    else throw error;
+                    if (error.code === '23505') {
+                        showToast('Ya existe esa función (duplicado)', 'error');
+                    } else {
+                        throw error;
+                    }
                     return;
                 }
                 showToast('Función agregada ✅', 'success');
+                ocultarFormFuncion();
                 recargarSeccion('funciones');
             } catch (e) { showToast('Error: ' + e.message, 'error'); }
         };
@@ -1033,7 +1302,8 @@
             const confirmar = await abrirModal('¿Eliminar esta función?');
             if (!confirmar) return;
             try {
-                await supabase.from('funcion').delete().eq('id_funcion', id);
+                const { error } = await supabase.from('funcion').delete().eq('id_funcion', id);
+                if (error) throw error;
                 showToast('Función eliminada', 'success');
                 recargarSeccion('funciones');
             } catch (e) { showToast('Error: ' + e.message, 'error'); }
@@ -1060,7 +1330,6 @@
         (async function init() {
             const ok = await checkAdmin();
             if (!ok) return;
-            // Crear secciones CRUD ocultas
             const cont = document.getElementById('adminSections');
             ['peliculas', 'directores', 'categorias', 'funciones'].forEach(tipo => {
                 const div = document.createElement('div');
@@ -1069,7 +1338,6 @@
                 div.style.display = 'none';
                 cont.appendChild(div);
             });
-            // Mostrar dashboard
             document.querySelector('.nav-item[data-section="dashboard"]').click();
         })();
     </script>
