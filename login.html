@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema22 · Login / Registro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f0c29;
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #667eea);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+            animation: fadeUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.96);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .logo-mini {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f093fb, #f5576c, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-mini i {
+            -webkit-text-fill-color: #667eea;
+            margin-right: 6px;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 60px;
+            padding: 4px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tabs button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 40px;
+            color: #a8a4d4;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tabs button.active {
+            background: rgba(102, 126, 234, 0.25);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .tabs button:hover {
+            color: #fff;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8a86b0;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 16px 16px 16px 48px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-group input:focus+i,
+        .form-group input:focus~i {
+            color: #667eea;
+        }
+
+        .form-group input::placeholder {
+            color: #6a6690;
+            font-weight: 300;
+        }
+
+        .form-group.shake input {
+            animation: shake 0.4s ease;
+            border-color: #f5576c;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        .btn-gradiente {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 60px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-size: 200% 200%;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: gradienteBtn 4s ease infinite alternate;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.25);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        @keyframes gradienteBtn {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .btn-gradiente:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-gradiente:active {
+            transform: scale(0.96);
+        }
+
+        .btn-gradiente:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .link-extra {
+            text-align: center;
+            margin-top: 20px;
+            color: #9a96c0;
+            font-size: 0.9rem;
+        }
+
+        .link-extra a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .link-extra a:hover {
+            color: #f5576c;
+            text-decoration: underline;
+        }
+
+        .form-hidden {
+            display: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: rgba(20, 20, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 24px;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 500;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.5s ease forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        .toast.success i {
+            color: #4ade80;
+        }
+
+        .toast.error i {
+            color: #f87171;
+        }
+
+        .toast.info i {
+            color: #60a5fa;
+        }
+
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast.removing {
+            animation: fadeOut 0.4s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glass-card {
+                padding: 28px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-card" id="authCard">
+        <div class="logo-mini"><i class="fas fa-film"></i> Cinema22</div>
+
+        <div class="tabs">
+            <button class="active" data-tab="login">Iniciar Sesión</button>
+            <button data-tab="register">Registrarme</button>
+        </div>
+
+        <!-- FORM LOGIN -->
+        <form id="loginForm">
+            <div class="form-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="loginEmail" placeholder="Correo electrónico" required>
+            </div>
+            <div class="form-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="loginPassword" placeholder="Contraseña" required>
+            </div>
+            <button type="submit" class="btn-gradiente" id="loginBtn"><i class="fas fa-sign-in-alt"></i> <span>Iniciar
+                    Sesión</span></button>
+            <div class="link-extra">
+                <a id="forgotLink">¿Olvidaste tu contraseña?</a>
+            </div>
+        </form>
+
+        <!-- FORM REGISTER -->
+        <form id="registerForm" class="form-hidden">
+            <div class="form-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="regName" placeholder="Nombre completo" required>
+            </div>
+            <div class="form-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="regEmail" placeholder="Correo electrónico" required>
+            </div>
+            <div class="form-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="regPassword" placeholder="Contraseña (mín. 6 caracteres)" required
+                    minlength="6">
+            </div>
+            <button type="submit" class="btn-gradiente" id="registerBtn"><i class="fas fa-user-plus"></i> <span>Crear
+                    Cuenta</span></button>
+            <div class="link-extra">
+                ¿Ya tienes cuenta? <a id="switchToLogin">Inicia Sesión</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ============================================================
+        // CONFIGURACIÓN SUPABASE (¡REEMPLAZA CON TUS DATOS!)
+        // ============================================================
+        const SUPABASE_URL = 'https://jhtgfyvdbcxymcnyaibg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpodGdmeXZkYmN4eW1jbnlhaWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzUyNzYsImV4cCI6MjA5NzE1MTI3Nn0.dX95IwFBrSgwVa0ldSKtWbUISGxDUzvHC6yms_rre2g';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ============================================================
+        // TOASTS
+        // ============================================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const iconMap = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fas ${iconMap[type] || 'fa-info-circle'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        // ============================================================
+        // TABS
+        // ============================================================
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const tabs = document.querySelectorAll('.tabs button');
+
+        function setTab(tab) {
+            tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            if (tab === 'login') {
+                loginForm.classList.remove('form-hidden');
+                registerForm.classList.add('form-hidden');
+            } else {
+                loginForm.classList.add('form-hidden');
+                registerForm.classList.remove('form-hidden');
+            }
+        }
+
+        tabs.forEach(btn => {
+            btn.addEventListener('click', () => setTab(btn.dataset.tab));
+        });
+
+        document.getElementById('switchToLogin').addEventListener('click', () => setTab('login'));
+        document.getElementById('forgotLink').addEventListener('click', () => {
+            showToast('Función disponible pronto ✨', 'info');
+        });
+
+        // ============================================================
+        // LOGIN
+        // ============================================================
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Cargando...';
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) {
+                    showToast(error.message || 'Error al iniciar sesión', 'error');
+                    document.querySelector('#loginForm .form-group input').classList.add('shake');
+                    setTimeout(() => document.querySelector('#loginForm .form-group input').classList.remove('shake'), 500);
+                    return;
+                }
+                showToast('¡Bienvenido de vuelta! 🎬', 'success');
+                setTimeout(() => { window.location.href = 'index.html'; }, 600);
+            } catch (err) {
+                showToast('Error inesperado', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        });
+
+        // ============================================================
+        // REGISTER
+        // ============================================================
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const btn = document.getElementById('registerBtn');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Creando...';
+
+            if (!nombre || nombre.length < 2) {
+                showToast('Ingresa un nombre válido', 'error');
+                document.getElementById('regName').closest('.form-group').classList.add('shake');
+                setTimeout(() => document.querySelector('.form-group.shake')?.classList.remove('shake'), 500);
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: { nombre: nombre }
+                    }
+                });
+                if (error) {
+                    showToast(error.message || 'Error al registrarse', 'error');
+                    document.querySelector('#registerForm .form-group input').classList.add('shake');
+                    setTimeout(() => document.querySelector('#registerForm .form-group input')?.classList.remove('shake'), 500);
+                    return;
+                }
+                showToast('¡Cuenta creada! Redirigiendo... ✨', 'success');
+                // El trigger en la BD crea el usuario en tabla `usuario`
+                setTimeout(() => { window.location.href = 'index.html'; }, 800);
+            } catch (err) {
+                showToast('Error inesperado', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        });
+
+        // ============================================================
+        // REDIRIGIR SI YA ESTÁ LOGUEADO
+        // ============================================================
+        (async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                // Si ya tiene sesión, lo mandamos al home
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+</body>
+
+</html>

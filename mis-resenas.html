@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema22 · Mis Reseñas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0f0c29;
+            background: linear-gradient(145deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #f0eef8;
+            padding: 20px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+            border-radius: 12px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 12px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header-mis {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .header-mis h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f093fb, #f5576c, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-mis h1 i {
+            -webkit-text-fill-color: #667eea;
+        }
+
+        .btn-volver {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-volver:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+            transform: scale(1.03);
+        }
+
+        /* ===== LISTA DE RESEÑAS ===== */
+        .resena-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 20px;
+            transition: all 0.3s ease;
+            animation: fadeUp 0.5s ease forwards;
+            opacity: 0;
+            align-items: flex-start;
+        }
+
+        .resena-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .resena-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .resena-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .resena-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .resena-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .resena-card:hover {
+            border-color: rgba(102, 126, 234, 0.15);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .resena-poster {
+            width: 80px;
+            height: 120px;
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .resena-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .resena-body .titulo-peli {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .resena-body .estrellas {
+            color: #f5b342;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .resena-body .estrellas .estrella-click {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .resena-body .estrellas .estrella-click:hover {
+            transform: scale(1.2);
+        }
+
+        .resena-body .comentario {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 10px 14px;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            color: #f0eef8;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            resize: vertical;
+            min-height: 60px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .resena-body .comentario:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.1);
+        }
+
+        .resena-body .comentario:disabled {
+            opacity: 0.6;
+            cursor: default;
+            background: transparent;
+        }
+
+        .resena-acciones {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .resena-acciones button {
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-editar {
+            background: rgba(102, 126, 234, 0.12);
+            color: #667eea;
+            border: 1px solid rgba(102, 126, 234, 0.15);
+        }
+
+        .btn-editar:hover {
+            background: rgba(102, 126, 234, 0.25);
+            transform: scale(1.03);
+        }
+
+        .btn-guardar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+        }
+
+        .btn-guardar:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-eliminar {
+            background: rgba(245, 87, 108, 0.12);
+            color: #f5576c;
+            border: 1px solid rgba(245, 87, 108, 0.15);
+        }
+
+        .btn-eliminar:hover {
+            background: rgba(245, 87, 108, 0.25);
+            transform: scale(1.03);
+        }
+
+        .btn-cancelar {
+            background: rgba(255, 255, 255, 0.04);
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-cancelar:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ===== VACÍO ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #667eea;
+            opacity: 0.3;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.6rem;
+            font-weight: 400;
+        }
+
+        .empty-state p {
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        .empty-state .btn-home {
+            margin-top: 20px;
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 12px 32px;
+            border-radius: 60px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .empty-state .btn-home:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #1a1a2e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 32px 40px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            animation: scaleIn 0.3s ease;
+        }
+
+        .modal-box h3 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+
+        .modal-box p {
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        .modal-box .modal-acciones {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: rgba(20, 20, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 24px;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 500;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.5s ease forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        .toast.success i {
+            color: #4ade80;
+        }
+
+        .toast.error i {
+            color: #f87171;
+        }
+
+        .toast.info i {
+            color: #60a5fa;
+        }
+
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast.removing {
+            animation: fadeOut 0.4s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .resena-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .resena-poster {
+                width: 100px;
+                height: 150px;
+            }
+
+            .header-mis h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header-mis">
+            <h1><i class="fas fa-star"></i> Mis Reseñas</h1>
+            <button class="btn-volver" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i>
+                Volver al home</button>
+        </div>
+
+        <!-- LISTA -->
+        <div id="listaResenas"></div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN -->
+    <div class="modal-overlay" id="modalConfirm">
+        <div class="modal-box">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#f5576c;"></i> ¿Eliminar reseña?</h3>
+            <p id="modalMsg">Esta acción no se puede deshacer.</p>
+            <div class="modal-acciones">
+                <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-eliminar" id="modalConfirmBtn">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ============================================================
+        // SUPABASE
+        // ============================================================
+        const SUPABASE_URL = 'https://jhtgfyvdbcxymcnyaibg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpodGdmeXZkYmN4eW1jbnlhaWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzUyNzYsImV4cCI6MjA5NzE1MTI3Nn0.dX95IwFBrSgwVa0ldSKtWbUISGxDUzvHC6yms_rre2g';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let reseñas = [];
+        let modalResolve = null;
+
+        // ============================================================
+        // TOASTS
+        // ============================================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const iconMap = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fas ${iconMap[type] || 'fa-info-circle'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        // ============================================================
+        // MODAL
+        // ============================================================
+        function abrirModal(mensaje) {
+            return new Promise((resolve) => {
+                document.getElementById('modalMsg').textContent = mensaje || '¿Estás seguro?';
+                document.getElementById('modalConfirm').classList.add('active');
+                modalResolve = resolve;
+                document.getElementById('modalConfirmBtn').onclick = () => {
+                    cerrarModal();
+                    resolve(true);
+                };
+            });
+        }
+        function cerrarModal() {
+            document.getElementById('modalConfirm').classList.remove('active');
+            if (modalResolve) { modalResolve(false); modalResolve = null; }
+        }
+
+        // ============================================================
+        // VERIFICAR AUTENTICACIÓN
+        // ============================================================
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) {
+                showToast('Debes iniciar sesión para ver tus reseñas', 'error');
+                setTimeout(() => window.location.href = 'login.html', 600);
+                return false;
+            }
+            currentUser = session.user;
+            return true;
+        }
+
+        // ============================================================
+        // CARGAR RESEÑAS
+        // ============================================================
+        async function cargarResenas() {
+            const container = document.getElementById('listaResenas');
+
+            try {
+                const { data, error } = await supabase
+                    .from('vista_resenas')
+                    .select('*')
+                    .eq('id_usuario', currentUser.id)
+                    .order('id_resena', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-star-half-alt"></i>
+              <h3>No has escrito reseñas aún</h3>
+              <p>Explora el catálogo y comparte tu opinión sobre tus películas favoritas.</p>
+              <a href="index.html" class="btn-home"><i class="fas fa-film"></i> Ir al catálogo</a>
+            </div>
+          `;
+                    return;
+                }
+
+                reseñas = data;
+                container.innerHTML = data.map((r, idx) => {
+                    const estrellas = '★'.repeat(r.puntaje || 0) + '☆'.repeat(5 - (r.puntaje || 0));
+                    const poster = r.url_poster || 'https://via.placeholder.com/80x120/1a1a2e/667eea?text=No+Poster';
+                    return `
+            <div class="resena-card" data-id="${r.id_resena}">
+              <div class="resena-poster" style="background-image: url(${poster});"></div>
+              <div class="resena-body">
+                <div class="titulo-peli">${r.nombre_pelicula}</div>
+                <div class="estrellas" data-id="${r.id_resena}">
+                  ${[1, 2, 3, 4, 5].map(i => `
+                    <span class="estrella-click" data-val="${i}" style="cursor:default; ${i <= r.puntaje ? 'color:#f5b342;' : 'color:#555;'}">★</span>
+                  `).join('')}
+                  <span style="font-size:0.8rem;color:#888;margin-left:6px;">${r.puntaje}/5</span>
+                </div>
+                <textarea class="comentario" disabled id="comentario-${r.id_resena}">${r.resena || ''}</textarea>
+                <div class="resena-acciones">
+                  <button class="btn-editar" onclick="editarResena(${r.id_resena})"><i class="fas fa-edit"></i> Editar</button>
+                  <button class="btn-eliminar" onclick="eliminarResena(${r.id_resena})"><i class="fas fa-trash"></i> Eliminar</button>
+                  <button class="btn-guardar" style="display:none;" id="guardar-${r.id_resena}" onclick="guardarResena(${r.id_resena})"><i class="fas fa-save"></i> Guardar</button>
+                  <button class="btn-cancelar" style="display:none;" id="cancelar-${r.id_resena}" onclick="cancelarEdicion(${r.id_resena})">Cancelar</button>
+                </div>
+              </div>
+            </div>
+          `;
+                }).join('');
+
+                // Guardar estado original de cada reseña para cancelar
+                reseñas.forEach(r => {
+                    window[`original_comentario_${r.id_resena}`] = r.resena || '';
+                    window[`original_puntaje_${r.id_resena}`] = r.puntaje || 0;
+                });
+
+            } catch (error) {
+                showToast('Error al cargar reseñas: ' + error.message, 'error');
+            }
+        }
+
+        // ============================================================
+        // ACCIONES: EDITAR, GUARDAR, ELIMINAR, CANCELAR
+        // ============================================================
+        window.editarResena = function (id) {
+            const card = document.querySelector(`.resena-card[data-id="${id}"]`);
+            if (!card) return;
+            const textarea = card.querySelector('.comentario');
+            const estrellas = card.querySelector('.estrellas');
+            const btnEditar = card.querySelector('.btn-editar');
+            const btnEliminar = card.querySelector('.btn-eliminar');
+            const btnGuardar = card.querySelector('.btn-guardar');
+            const btnCancelar = card.querySelector('.btn-cancelar');
+
+            // Habilitar edición
+            textarea.disabled = false;
+            textarea.focus();
+            btnEditar.style.display = 'none';
+            btnEliminar.style.display = 'none';
+            btnGuardar.style.display = 'inline-flex';
+            btnCancelar.style.display = 'inline-flex';
+
+            // Hacer estrellas clickeables
+            estrellas.querySelectorAll('.estrella-click').forEach(el => {
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', function () {
+                    const val = parseInt(this.dataset.val);
+                    const padre = this.closest('.estrellas');
+                    padre.querySelectorAll('.estrella-click').forEach((star, idx) => {
+                        if (idx < val) {
+                            star.style.color = '#f5b342';
+                            star.textContent = '★';
+                        } else {
+                            star.style.color = '#555';
+                            star.textContent = '☆';
+                        }
+                    });
+                    // Guardar temporalmente el valor seleccionado
+                    padre.dataset.tempStars = val;
+                });
+            });
+        };
+
+        window.guardarResena = async function (id) {
+            const card = document.querySelector(`.resena-card[data-id="${id}"]`);
+            if (!card) return;
+            const textarea = card.querySelector('.comentario');
+            const estrellas = card.querySelector('.estrellas');
+            const nuevoComentario = textarea.value.trim();
+            const nuevoPuntaje = parseInt(estrellas.dataset.tempStars) || parseInt(window[`original_puntaje_${id}`]) || 0;
+
+            if (nuevoPuntaje === 0) {
+                showToast('Selecciona una calificación', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('resena')
+                    .update({
+                        puntaje: nuevoPuntaje,
+                        resena: nuevoComentario || null
+                    })
+                    .eq('id_resena', id);
+
+                if (error) throw error;
+
+                showToast('Reseña actualizada ✅', 'success');
+                // Recargar para reflejar cambios
+                cargarResenas();
+            } catch (error) {
+                showToast('Error al guardar: ' + error.message, 'error');
+            }
+        };
+
+        window.cancelarEdicion = function (id) {
+            const card = document.querySelector(`.resena-card[data-id="${id}"]`);
+            if (!card) return;
+            const textarea = card.querySelector('.comentario');
+            const estrellas = card.querySelector('.estrellas');
+            const btnEditar = card.querySelector('.btn-editar');
+            const btnEliminar = card.querySelector('.btn-eliminar');
+            const btnGuardar = card.querySelector('.btn-guardar');
+            const btnCancelar = card.querySelector('.btn-cancelar');
+
+            // Restaurar valores originales
+            textarea.value = window[`original_comentario_${id}`] || '';
+            textarea.disabled = true;
+            const puntajeOrig = window[`original_puntaje_${id}`] || 0;
+            estrellas.querySelectorAll('.estrella-click').forEach((el, idx) => {
+                el.style.cursor = 'default';
+                if (idx < puntajeOrig) {
+                    el.style.color = '#f5b342';
+                    el.textContent = '★';
+                } else {
+                    el.style.color = '#555';
+                    el.textContent = '☆';
+                }
+            });
+            delete estrellas.dataset.tempStars;
+
+            btnEditar.style.display = 'inline-flex';
+            btnEliminar.style.display = 'inline-flex';
+            btnGuardar.style.display = 'none';
+            btnCancelar.style.display = 'none';
+        };
+
+        window.eliminarResena = async function (id) {
+            const confirmar = await abrirModal('¿Eliminar esta reseña permanentemente?');
+            if (!confirmar) return;
+
+            try {
+                const { error } = await supabase
+                    .from('resena')
+                    .delete()
+                    .eq('id_resena', id);
+
+                if (error) throw error;
+
+                showToast('Reseña eliminada', 'success');
+                cargarResenas();
+            } catch (error) {
+                showToast('Error al eliminar: ' + error.message, 'error');
+            }
+        };
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        (async function init() {
+            const ok = await checkAuth();
+            if (ok) {
+                await cargarResenas();
+            }
+        })();
+    </script>
+</body>
+
+</html>

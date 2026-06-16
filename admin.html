@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema22 · Panel Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0f0c29;
+            background: linear-gradient(145deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #f0eef8;
+            display: flex;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+            border-radius: 12px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 12px;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 80px;
+            background: rgba(20, 20, 40, 0.7);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            min-height: 100vh;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: width 0.4s cubic-bezier(0.2, 0.9, 0.4, 1);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .sidebar:hover {
+            width: 220px;
+        }
+
+        .sidebar .logo-mini {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f093fb, #f5576c, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 12px;
+        }
+
+        .sidebar .logo-mini i {
+            -webkit-text-fill-color: #667eea;
+            font-size: 1.4rem;
+        }
+
+        .sidebar .logo-mini span {
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar:hover .logo-mini span {
+            opacity: 1;
+        }
+
+        .sidebar .nav-item {
+            width: 100%;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #a8a4d4;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            white-space: nowrap;
+            border: none;
+            background: transparent;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .sidebar .nav-item i {
+            font-size: 1.3rem;
+            min-width: 28px;
+        }
+
+        .sidebar .nav-item span {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar:hover .nav-item span {
+            opacity: 1;
+        }
+
+        .sidebar .nav-item:hover {
+            background: rgba(102, 126, 234, 0.12);
+            color: #fff;
+        }
+
+        .sidebar .nav-item.active {
+            background: rgba(102, 126, 234, 0.2);
+            color: #fff;
+            border-left: 3px solid #667eea;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 24px 32px 40px 32px;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        .header-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-admin h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .header-admin .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 20px;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .header-admin .user-info i {
+            color: #667eea;
+        }
+
+        /* ===== DASHBOARD CARDS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            padding: 20px 24px;
+            transition: all 0.3s ease;
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .stat-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .stat-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .stat-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .stat-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(102, 126, 234, 0.2);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card .numero {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-card .label {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .stat-card i {
+            margin-right: 8px;
+            color: #667eea;
+        }
+
+        /* ===== SECCIONES CRUD ===== */
+        .crud-section {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 24px;
+            padding: 24px 28px;
+            margin-bottom: 32px;
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .crud-section:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .crud-section:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .crud-section:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .crud-section:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .crud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .crud-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .crud-header h2 i {
+            color: #667eea;
+        }
+
+        .btn-crud {
+            background: rgba(102, 126, 234, 0.12);
+            border: 1px solid rgba(102, 126, 234, 0.15);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-crud:hover {
+            background: rgba(102, 126, 234, 0.25);
+            transform: scale(1.03);
+        }
+
+        .btn-crud.eliminar {
+            background: rgba(245, 87, 108, 0.12);
+            border-color: rgba(245, 87, 108, 0.15);
+        }
+
+        .btn-crud.eliminar:hover {
+            background: rgba(245, 87, 108, 0.25);
+        }
+
+        .form-crud {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .form-crud input,
+        .form-crud select,
+        .form-crud textarea {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-crud input:focus,
+        .form-crud select:focus,
+        .form-crud textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-crud textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .form-crud .btn-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-crud .btn-submit:hover {
+            transform: scale(1.02);
+        }
+
+        /* Tabla */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-weight: 600;
+            opacity: 0.7;
+        }
+
+        td {
+            padding: 12px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            vertical-align: middle;
+        }
+
+        td .acciones {
+            display: flex;
+            gap: 8px;
+        }
+
+        td .acciones button {
+            background: transparent;
+            border: none;
+            color: #a8a4d4;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        td .acciones button:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        td .acciones button.editar:hover {
+            color: #667eea;
+        }
+
+        td .acciones button.eliminar:hover {
+            color: #f5576c;
+        }
+
+        /* Modal confirmación */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #1a1a2e;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 32px 40px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            animation: scaleIn 0.3s ease;
+        }
+
+        .modal-box h3 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+
+        .modal-box p {
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        .modal-box .modal-acciones {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: rgba(20, 20, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 24px;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 500;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.5s ease forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        .toast.success i {
+            color: #4ade80;
+        }
+
+        .toast.error i {
+            color: #f87171;
+        }
+
+        .toast.info i {
+            color: #60a5fa;
+        }
+
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast.removing {
+            animation: fadeOut 0.4s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar:hover {
+                width: 180px;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .header-admin h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-mini"><i class="fas fa-film"></i><span>Cinema22</span></div>
+        <button class="nav-item active" data-section="dashboard"><i
+                class="fas fa-chart-pie"></i><span>Dashboard</span></button>
+        <button class="nav-item" data-section="peliculas"><i class="fas fa-film"></i><span>Películas</span></button>
+        <button class="nav-item" data-section="directores"><i
+                class="fas fa-user-tie"></i><span>Directores</span></button>
+        <button class="nav-item" data-section="categorias"><i class="fas fa-tags"></i><span>Categorías</span></button>
+        <button class="nav-item" data-section="funciones"><i class="fas fa-clock"></i><span>Funciones</span></button>
+        <button class="nav-item" onclick="window.location.href='index.html'" style="margin-top:auto;"><i
+                class="fas fa-home"></i><span>Home</span></button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content" id="mainContent">
+        <div class="header-admin">
+            <h1><i class="fas fa-shield-alt" style="color:#667eea;"></i> Panel Admin</h1>
+            <div class="user-info"><i class="fas fa-user-circle"></i> <span id="adminUser">Admin</span></div>
+        </div>
+
+        <div id="adminSections">
+            <!-- Dashboard -->
+            <div id="section-dashboard" class="crud-section">
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="numero" id="statPeliculas">0</div>
+                        <div class="label"><i class="fas fa-film"></i> Películas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="numero" id="statDirectores">0</div>
+                        <div class="label"><i class="fas fa-user-tie"></i> Directores</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="numero" id="statCategorias">0</div>
+                        <div class="label"><i class="fas fa-tags"></i> Categorías</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="numero" id="statFunciones">0</div>
+                        <div class="label"><i class="fas fa-clock"></i> Funciones</div>
+                    </div>
+                </div>
+                <p style="opacity:0.5; font-size:0.85rem;"><i class="fas fa-info-circle"></i> Panel de control con
+                    estadísticas generales</p>
+            </div>
+
+            <!-- Secciones CRUD se inyectan con JS -->
+        </div>
+    </main>
+
+    <!-- MODAL CONFIRMACIÓN -->
+    <div class="modal-overlay" id="modalConfirm">
+        <div class="modal-box">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#f5576c;"></i> ¿Eliminar?</h3>
+            <p id="modalMsg">¿Estás seguro de eliminar este elemento?</p>
+            <div class="modal-acciones">
+                <button class="btn-crud" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-crud eliminar" id="modalConfirmBtn">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ============================================================
+        // SUPABASE
+        // ============================================================
+        const SUPABASE_URL = 'https://jhtgfyvdbcxymcnyaibg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpodGdmeXZkYmN4eW1jbnlhaWJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzUyNzYsImV4cCI6MjA5NzE1MTI3Nn0.dX95IwFBrSgwVa0ldSKtWbUISGxDUzvHC6yms_rre2g';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let modalResolve = null;
+
+        // ============================================================
+        // TOASTS
+        // ============================================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const iconMap = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fas ${iconMap[type] || 'fa-info-circle'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        // ============================================================
+        // MODAL
+        // ============================================================
+        function abrirModal(mensaje) {
+            return new Promise((resolve) => {
+                document.getElementById('modalMsg').textContent = mensaje || '¿Estás seguro?';
+                document.getElementById('modalConfirm').classList.add('active');
+                modalResolve = resolve;
+                document.getElementById('modalConfirmBtn').onclick = () => {
+                    cerrarModal();
+                    resolve(true);
+                };
+            });
+        }
+        function cerrarModal() {
+            document.getElementById('modalConfirm').classList.remove('active');
+            if (modalResolve) { modalResolve(false); modalResolve = null; }
+        }
+
+        // ============================================================
+        // VERIFICAR ADMIN
+        // ============================================================
+        async function checkAdmin() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) {
+                showToast('Debes iniciar sesión', 'error');
+                setTimeout(() => window.location.href = 'login.html', 500);
+                return false;
+            }
+            currentUser = session.user;
+            const { data: usuario } = await supabase
+                .from('usuario')
+                .select('rol, nombre')
+                .eq('id_usuario', currentUser.id)
+                .maybeSingle();
+            if (!usuario || usuario.rol !== 'admin') {
+                showToast('Acceso denegado: se requiere rol admin', 'error');
+                setTimeout(() => window.location.href = 'index.html', 500);
+                return false;
+            }
+            document.getElementById('adminUser').textContent = usuario.nombre || 'Admin';
+            return true;
+        }
+
+        // ============================================================
+        // NAVEGACIÓN SIDEBAR
+        // ============================================================
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const section = this.dataset.section;
+                document.querySelectorAll('.crud-section').forEach(el => el.style.display = 'none');
+                const target = document.getElementById(`section-${section}`);
+                if (target) target.style.display = 'block';
+                if (section === 'dashboard') {
+                    cargarEstadisticas();
+                } else {
+                    cargarCRUD(section);
+                }
+            });
+        });
+
+        // ============================================================
+        // CARGAR ESTADÍSTICAS
+        // ============================================================
+        async function cargarEstadisticas() {
+            const [pelis, dirs, cats, funcs] = await Promise.all([
+                supabase.from('pelicula').select('*', { count: 'exact', head: true }),
+                supabase.from('director').select('*', { count: 'exact', head: true }),
+                supabase.from('categoria').select('*', { count: 'exact', head: true }),
+                supabase.from('funcion').select('*', { count: 'exact', head: true })
+            ]);
+            document.getElementById('statPeliculas').textContent = pelis.count || 0;
+            document.getElementById('statDirectores').textContent = dirs.count || 0;
+            document.getElementById('statCategorias').textContent = cats.count || 0;
+            document.getElementById('statFunciones').textContent = funcs.count || 0;
+        }
+
+        // ============================================================
+        // CRUD DINÁMICO
+        // ============================================================
+        let crudData = {};
+
+        async function cargarCRUD(tipo) {
+            const container = document.getElementById(`section-${tipo}`);
+            if (!container) return;
+            // Si ya existe la sección, no recargar
+            if (container.dataset.cargado === 'true') return;
+            container.dataset.cargado = 'true';
+
+            let html = '';
+            if (tipo === 'peliculas') {
+                html = await renderPeliculas();
+            } else if (tipo === 'directores') {
+                html = await renderDirectores();
+            } else if (tipo === 'categorias') {
+                html = await renderCategorias();
+            } else if (tipo === 'funciones') {
+                html = await renderFunciones();
+            }
+            container.innerHTML = html;
+        }
+
+        // ========== PELÍCULAS ==========
+        async function renderPeliculas() {
+            const { data: peliculas } = await supabase.from('pelicula').select('*, director(nombre)').order('id_pelicula');
+            const { data: directores } = await supabase.from('director').select('*');
+            const { data: categorias } = await supabase.from('categoria').select('*');
+
+            let html = `
+        <div class="crud-header"><h2><i class="fas fa-film"></i> Películas</h2></div>
+        <div class="form-crud" id="formPelicula">
+          <input type="text" id="pNombre" placeholder="Nombre">
+          <input type="number" id="pAno" placeholder="Año">
+          <input type="text" id="pPais" placeholder="País">
+          <input type="text" id="pPoster" placeholder="URL Poster">
+          <input type="text" id="pFicha" placeholder="Ficha técnica">
+          <textarea id="pSinopsis" placeholder="Sinopsis"></textarea>
+          <select id="pDirector"><option value="">Director</option>
+            ${directores.map(d => `<option value="${d.id_director}">${d.nombre}</option>`).join('')}
+          </select>
+          <select id="pCategorias" multiple style="min-height:60px;">
+            ${categorias.map(c => `<option value="${c.id_categoria}">${c.nombre_categoria}</option>`).join('')}
+          </select>
+          <button class="btn-submit" onclick="guardarPelicula()"><i class="fas fa-save"></i> Guardar</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Nombre</th><th>Año</th><th>Director</th><th>Acciones</th></tr></thead>
+            <tbody>
+              ${peliculas.map(p => `
+                <tr>
+                  <td>${p.id_pelicula}</td>
+                  <td>${p.nombre_pelicula}</td>
+                  <td>${p.ano_lanzamiento}</td>
+                  <td>${p.director?.nombre || 'N/A'}</td>
+                  <td><div class="acciones">
+                    <button class="editar" onclick="editarPelicula(${p.id_pelicula})"><i class="fas fa-edit"></i></button>
+                    <button class="eliminar" onclick="eliminarPelicula(${p.id_pelicula})"><i class="fas fa-trash"></i></button>
+                  </div></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+            return html;
+        }
+
+        window.guardarPelicula = async function () {
+            const nombre = document.getElementById('pNombre').value.trim();
+            const ano = parseInt(document.getElementById('pAno').value);
+            const pais = document.getElementById('pPais').value.trim();
+            const poster = document.getElementById('pPoster').value.trim();
+            const ficha = document.getElementById('pFicha').value.trim();
+            const sinopsis = document.getElementById('pSinopsis').value.trim();
+            const director = document.getElementById('pDirector').value;
+            const categorias = [...document.getElementById('pCategorias').selectedOptions].map(o => o.value);
+
+            if (!nombre || !ano || !director) {
+                showToast('Nombre, año y director son obligatorios', 'error');
+                return;
+            }
+
+            try {
+                const { data: peli, error } = await supabase
+                    .from('pelicula')
+                    .insert({
+                        nombre_pelicula: nombre,
+                        ano_lanzamiento: ano,
+                        pais: pais || 'Desconocido',
+                        url_poster: poster || 'https://via.placeholder.com/300x450/1a1a2e/667eea?text=No+Poster',
+                        ficha: ficha || null,
+                        sinopsis: sinopsis || 'Sin sinopsis',
+                        id_director: parseInt(director)
+                    })
+                    .select()
+                    .single();
+                if (error) throw error;
+                // Asignar categorías
+                if (categorias.length && peli) {
+                    const inserts = categorias.map(c => ({
+                        id_pelicula: peli.id_pelicula,
+                        id_categoria: parseInt(c)
+                    }));
+                    await supabase.from('pelicula_categoria').insert(inserts);
+                }
+                showToast('Película creada ✅', 'success');
+                recargarSeccion('peliculas');
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        };
+
+        window.eliminarPelicula = async function (id) {
+            const confirmar = await abrirModal('¿Eliminar esta película y sus relaciones?');
+            if (!confirmar) return;
+            try {
+                const { error } = await supabase.from('pelicula').delete().eq('id_pelicula', id);
+                if (error) throw error;
+                showToast('Película eliminada', 'success');
+                recargarSeccion('peliculas');
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        };
+
+        window.editarPelicula = function (id) {
+            showToast('Edición avanzada: Próximamente 🚀', 'info');
+        };
+
+        // ========== DIRECTORES ==========
+        async function renderDirectores() {
+            const { data: directores } = await supabase.from('director').select('*').order('id_director');
+            let html = `
+        <div class="crud-header"><h2><i class="fas fa-user-tie"></i> Directores</h2></div>
+        <div class="form-crud">
+          <input type="text" id="dNombre" placeholder="Nombre del director">
+          <button class="btn-submit" onclick="guardarDirector()"><i class="fas fa-save"></i> Agregar</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+          ${directores.map(d => `
+            <div style="background:rgba(255,255,255,0.02);border-radius:16px;padding:12px 18px;border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:12px;">
+              <span>${d.nombre}</span>
+              <button class="btn-crud eliminar" style="padding:4px 12px;font-size:0.8rem;" onclick="eliminarDirector(${d.id_director})"><i class="fas fa-trash"></i></button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+            return html;
+        }
+
+        window.guardarDirector = async function () {
+            const nombre = document.getElementById('dNombre').value.trim();
+            if (!nombre) { showToast('Ingresa un nombre', 'error'); return; }
+            try {
+                await supabase.from('director').insert({ nombre });
+                showToast('Director agregado ✅', 'success');
+                recargarSeccion('directores');
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        };
+
+        window.eliminarDirector = async function (id) {
+            const confirmar = await abrirModal('¿Eliminar este director?');
+            if (!confirmar) return;
+            try {
+                await supabase.from('director').delete().eq('id_director', id);
+                showToast('Director eliminado', 'success');
+                recargarSeccion('directores');
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        };
+
+        // ========== CATEGORÍAS ==========
+        async function renderCategorias() {
+            const { data: categorias } = await supabase.from('categoria').select('*').order('id_categoria');
+            const colores = ['#667eea', '#f5576c', '#f093fb', '#4ade80', '#f5b342', '#60a5fa', '#a78bfa'];
+            let html = `
+        <div class="crud-header"><h2><i class="fas fa-tags"></i> Categorías</h2></div>
+        <div class="form-crud">
+          <input type="text" id="cNombre" placeholder="Nombre categoría">
+          <button class="btn-submit" onclick="guardarCategoria()"><i class="fas fa-save"></i> Agregar</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          ${categorias.map((c, i) => `
+            <span style="background:${colores[i % colores.length]}22;border:1px solid ${colores[i % colores.length]}44;border-radius:40px;padding:6px 18px;display:inline-flex;align-items:center;gap:10px;">
+              ${c.nombre_categoria}
+              <button onclick="eliminarCategoria(${c.id_categoria})" style="background:transparent;border:none;color:#f5576c;cursor:pointer;"><i class="fas fa-times"></i></button>
+            </span>
+          `).join('')}
+        </div>
+      `;
+            return html;
+        }
+
+        window.guardarCategoria = async function () {
+            const nombre = document.getElementById('cNombre').value.trim();
+            if (!nombre) { showToast('Ingresa un nombre', 'error'); return; }
+            try {
+                await supabase.from('categoria').insert({ nombre_categoria: nombre });
+                showToast('Categoría agregada ✅', 'success');
+                recargarSeccion('categorias');
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        };
+
+        window.eliminarCategoria = async function (id) {
+            const confirmar = await abrirModal('¿Eliminar esta categoría?');
+            if (!confirmar) return;
+            try {
+                await supabase.from('categoria').delete().eq('id_categoria', id);
+                showToast('Categoría eliminada', 'success');
+                recargarSeccion('categorias');
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        };
+
+        // ========== FUNCIONES ==========
+        async function renderFunciones() {
+            const { data: funciones } = await supabase
+                .from('funcion')
+                .select('*, pelicula(nombre_pelicula)')
+                .order('fecha')
+                .limit(50);
+            const { data: peliculas } = await supabase.from('pelicula').select('id_pelicula, nombre_pelicula');
+            let html = `
+        <div class="crud-header"><h2><i class="fas fa-clock"></i> Funciones</h2></div>
+        <div class="form-crud">
+          <input type="date" id="fFecha">
+          <input type="time" id="fHora">
+          <select id="fPelicula"><option value="">Película</option>
+            ${peliculas.map(p => `<option value="${p.id_pelicula}">${p.nombre_pelicula}</option>`).join('')}
+          </select>
+          <button class="btn-submit" onclick="guardarFuncion()"><i class="fas fa-save"></i> Agregar</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Hora</th><th>Película</th><th>Acciones</th></tr></thead>
+            <tbody>
+              ${funciones.map(f => `
+                <tr>
+                  <td>${f.fecha}</td>
+                  <td>${f.hora.slice(0, 5)}</td>
+                  <td>${f.pelicula?.nombre_pelicula || 'N/A'}</td>
+                  <td><button class="btn-crud eliminar" style="padding:4px 12px;font-size:0.8rem;" onclick="eliminarFuncion(${f.id_funcion})"><i class="fas fa-trash"></i></button></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+            return html;
+        }
+
+        window.guardarFuncion = async function () {
+            const fecha = document.getElementById('fFecha').value;
+            const hora = document.getElementById('fHora').value;
+            const pelicula = document.getElementById('fPelicula').value;
+            if (!fecha || !hora || !pelicula) {
+                showToast('Completa todos los campos', 'error');
+                return;
+            }
+            try {
+                const { error } = await supabase.from('funcion').insert({
+                    fecha, hora, id_pelicula: parseInt(pelicula)
+                });
+                if (error) {
+                    if (error.code === '23505') showToast('Ya existe esa función (duplicado)', 'error');
+                    else throw error;
+                    return;
+                }
+                showToast('Función agregada ✅', 'success');
+                recargarSeccion('funciones');
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        };
+
+        window.eliminarFuncion = async function (id) {
+            const confirmar = await abrirModal('¿Eliminar esta función?');
+            if (!confirmar) return;
+            try {
+                await supabase.from('funcion').delete().eq('id_funcion', id);
+                showToast('Función eliminada', 'success');
+                recargarSeccion('funciones');
+            } catch (e) { showToast('Error: ' + e.message, 'error'); }
+        };
+
+        // ============================================================
+        // RECARGAR SECCIÓN
+        // ============================================================
+        function recargarSeccion(tipo) {
+            const container = document.getElementById(`section-${tipo}`);
+            if (container) {
+                container.dataset.cargado = 'false';
+                container.innerHTML = '';
+                cargarCRUD(tipo);
+            }
+            if (tipo === 'peliculas' || tipo === 'directores' || tipo === 'categorias' || tipo === 'funciones') {
+                cargarEstadisticas();
+            }
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        (async function init() {
+            const ok = await checkAdmin();
+            if (!ok) return;
+            // Crear secciones CRUD ocultas
+            const cont = document.getElementById('adminSections');
+            ['peliculas', 'directores', 'categorias', 'funciones'].forEach(tipo => {
+                const div = document.createElement('div');
+                div.id = `section-${tipo}`;
+                div.className = 'crud-section';
+                div.style.display = 'none';
+                cont.appendChild(div);
+            });
+            // Mostrar dashboard
+            document.querySelector('.nav-item[data-section="dashboard"]').click();
+        })();
+    </script>
+</body>
+
+</html>
